@@ -1,0 +1,122 @@
+:root {
+    /* Colors */
+    --bg-dark: #0a0a12;
+    --bg-card: #14141f;
+    --bg-glass: rgba(20, 20, 31, 0.7);
+    --text-main: #e0e0e0;
+    --text-muted: #a0a0b0;
+    --accent-cyan: #00f3ff;
+    --accent-purple: #bc13fe;
+    --accent-green: #0aff68;
+    --accent-pink: #ff0055;
+    
+    /* Gradients */
+    --gradient-main: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+    --gradient-glow: radial-gradient(circle at center, rgba(188, 19, 254, 0.2), transparent 70%);
+
+    /* Fonts */
+    --font-main: 'Inter', 'Noto Sans JP', sans-serif;
+    --font-heading: 'Outfit', 'Noto Sans JP', sans-serif;
+
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 4rem;
+    --spacing-xl: 8rem;
+
+    /* Effects */
+    --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --shadow-neon: 0 0 15px rgba(0, 243, 255, 0.3);
+    --radius-md: 12px;
+    --radius-lg: 24px;
+    --border-glass: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image: var(--gradient-glow);
+    background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: #fff;
+    line-height: 1.2;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Utilities */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.text-gradient {
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: rgba(255, 255, 255, 0.05);
+    border: var(--border-glass);
+    border-radius: 50px;
+    color: #fff;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-neon);
+    border-color: var(--accent-cyan);
+}
+
+.btn-primary {
+    background: var(--gradient-main);
+    border: none;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
+}
+
+/* Glassmorphism Card */
+.glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    border: var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-card);
+}

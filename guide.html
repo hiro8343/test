@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗記の攻略本 | 楽しい暗記サイト</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <style>
+        .guide-header {
+            text-align: center;
+            padding: 4rem 0 2rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 4rem 0 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .skill-card {
+            background: rgba(20, 20, 31, 0.6);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+
+        .skill-header {
+            padding: 1.5rem;
+            background: rgba(0, 243, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .skill-body {
+            padding: 1.5rem;
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+        }
+
+        .skill-tag {
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tag-basic {
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .tag-advanced {
+            color: var(--accent-purple);
+            border: 1px solid var(--accent-purple);
+        }
+
+        .try-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 8px 20px;
+            background: var(--accent-cyan);
+            color: #000;
+            font-weight: bold;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .try-btn:hover {
+            opacity: 1;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-cyan);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-back" style="position:absolute; top:2rem; left:2rem;">← Topに戻る</a>
+
+        <header class="guide-header animate-fade-in">
+            <span style="color: var(--accent-cyan); font-weight: bold;">AREA 2: STRATEGY GUIDE</span>
+            <h1 class="text-gradient">暗記の攻略本</h1>
+            <p>記憶をハックする「武器」を選ぼう。</p>
+        </header>
+
+        <main>
+            <!-- Basic Skills -->
+            <section>
+                <div class="section-title animate-fade-in delay-100">
+                    <h2 style="color: var(--accent-green);">🔓 基本スキル (Basic)</h2>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">まずはここから装備しよう</span>
+                </div>
+
+                <div class="skill-grid animate-fade-in delay-200">
+                    <!-- Skill 1 -->
+                    <div class="skill-card" onclick="openModal('img')">
+                        <div class="skill-header">
+                            <span class="skill-icon">🖼️</span>
+                            <span class="skill-tag tag-basic">Level 1</span>
+                        </div>
+                        <div class="skill-body">
+                            <h3>イメージ化</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">言葉を「絵」に変換する基本技。
+                            </p>
+                            <span class="try-btn">3分実験へ</span>
+                        </div>
+                    </div>
+
+                    <!-- Skill 2 -->
+                    <div class="skill-card" onclick="openModal('chunk')">
+                        <div class="skill-header">
+                            <span class="skill-icon">🔪</span>
+                            <span class="skill-tag tag-basic">Level 1</span>
+                        </div>
+                        <div class="skill-body">
+                            <h3>チャンキング（分解）</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">長い情報を一口サイズに切る。</p>
+                            <span class="try-btn">解説を見る</span>
+                        </div>
+                    </div>
+
+                    <!-- Skill 3 -->
+                    <div class="skill-card" onclick="openModal('emotion')">
+                        <div class="skill-header">
+                            <span class="skill-icon">❤️</span>
+                            <span class="skill-tag tag-basic">Level 2</span>
+                        </div>
+                        <div class="skill-body">
+                            <h3>感情フック</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">「ウケる」「キモい」で記憶強化。
+                            </p>
+                            <span class="try-btn">解説を見る</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advanced Tech -->
+            <section>
+                <div class="section-title animate-fade-in delay-300">
+                    <h2 style="color: var(--accent-purple);">🧠 上級テクニック (Advanced)</h2>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">チート級の強さを手に入れる</span>
+                </div>
+
+                <div class="skill-grid animate-fade-in delay-400">
+                    <!-- Tech 1 -->
+                    <div class="skill-card" onclick="openModal('palace')">
+                        <div class="skill-header">
+                            <span class="skill-icon">🏰</span>
+                            <span class="skill-tag tag-advanced">SR</span>
+                        </div>
+                        <div class="skill-body">
+                            <h3>記憶の宮殿</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">
+                                おなじみの場所に知識を配置する、世界記憶力選手権御用達の最強魔法。</p>
+                            <span class="try-btn">秘密を見る</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 2 -->
+                    <div class="skill-card" onclick="openModal('sr')">
+                        <div class="skill-header">
+                            <span class="skill-icon">📉</span>
+                            <span class="skill-tag tag-advanced">R</span>
+                        </div>
+                        <div class="skill-body">
+                            <h3>間隔反復 (Spaced Repetition)</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">
+                                「忘れかけた頃」に復習するタイミング管理術。</p>
+                            <span class="try-btn">秘密を見る</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech 3 -->
+                    <div class="skill-card" onclick="openModal('feynman')">
+                        <div class="skill-header">
+                            <span class="skill-icon">👶</span>
+                            <span class="skill-tag tag-advanced">R</span>
+                        </div>
+                        <div class="skill-body">
+                            <h3>フェインマン・テクニック</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">
+                                「6歳の子供に説明するつもり」で理解を深める。</p>
+                            <span class="try-btn">秘密を見る</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Template -->
+    <div id="modal" class="modal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">×</span>
+            <div id="modal-body">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const contentData = {
+            img: {
+                title: "🖼️ イメージ化の術",
+                text: "脳は文字よりも画像を何倍も強く記憶します。<br><br>【実験】<br>「リンゴ、時計、宇宙」と覚えるより、<br>「宇宙空間に巨大なリンゴが浮かんでいて、その周りを時計が回っている」<br>という奇妙な映像を頭に思い浮かべてください。<br>…どうですか？文字より簡単に覚えられませんか？"
+            },
+            chunk: {
+                title: "🔪 チャンキング",
+                text: "電話番号を「09012345678」と一気に覚えるのは無理でも、「090-1234-5678」と区切れば覚えられます。<br>これがチャンキング。<br>情報を意味のあるカタマリ（チャンク）に分けることで、脳の処理容量（ワーキングメモリ）を節約できます。"
+            },
+            emotion: {
+                title: "❤️ 感情フック",
+                text: "「昨日食べたランチ」は忘れても、「人生で一番まずかった料理」は一生忘れません。<br>扁桃体（感情）が海馬（記憶）を刺激するからです。<br>覚えたい単語に変な顔を描いたり、大げさなストーリーを作って「バカバカしい！」と笑ったりするのがコツです。"
+            },
+            palace: {
+                title: "🏰 記憶の宮殿",
+                text: "シャーロック・ホームズも使う最強の記憶術。<br>1. よく知っている場所（自宅や通学路）を思い浮かべる。<br>2. 覚えたいものを、その場所の特定のポイントに「置く」イメージをする。<br>3. 思い出す時は、頭の中でその場所を歩き回って回収する。<br><br>空間認識能力を使うので、順番通りに大量に覚えるのに最強です。"
+            },
+            sr: {
+                title: "📉 間隔反復 (Spaced Repetition)",
+                text: "人間は覚えた1時間後には半分以上忘れます（エビングハウスの忘却曲線）。<br>しかし、「忘れかけたタイミング」で復習すると記憶が強固になります。<br>1日後、3日後、1週間後、1ヶ月後…と間隔を広げて復習するのが科学的に最強の効率です。"
+            },
+            feynman: {
+                title: "👶 フェインマン・テクニック",
+                text: "ノーベル賞物理学者リチャード・フェインマンの学習法。<br>1. コンセプトを選ぶ。<br>2. 専門用語を使わず、子供にもわかるように説明してみる。<br>3. うまく説明できない部分が、自分が理解していない部分。<br>「説明できる」＝「覚えている」です。"
+            }
+        };
+
+        function openModal(key) {
+            const data = contentData[key];
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <h2 style="margin-bottom: 1rem; color: var(--accent-cyan);">${data.title}</h2>
+                <p style="line-height: 1.8; color: var(--text-main);">${data.text}</p>
+                <button onclick="closeModal()" class="btn btn-primary" style="margin-top: 2rem; width: 100%;">閉じる</button>
+            `;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗記したらかっこいい | 楽しい暗記サイト</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <style>
+        .cool-header {
+            text-align: center;
+            padding: 4rem 0 2rem;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            border-color: var(--accent-purple);
+            color: #fff;
+            background: rgba(188, 19, 254, 0.1);
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.2);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .cool-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cool-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-purple);
+        }
+
+        .card-cat {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-purple);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .coolness {
+            margin-top: 1rem;
+            color: #ffd700;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-back" style="position:absolute; top:2rem; left:2rem;">← Topに戻る</a>
+
+        <header class="cool-header animate-fade-in">
+            <span style="color: var(--accent-purple); font-weight: bold;">AREA 4: THE COLLECTION</span>
+            <h1 class="text-gradient">暗記したらかっこいいこと</h1>
+            <p>実用性よりロマン。語りたくなる知識たち。</p>
+        </header>
+
+        <main>
+            <!-- Filters -->
+            <div class="filters animate-fade-in delay-100">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="space">宇宙・自然</button>
+                <button class="filter-btn" data-filter="history">時間・歴史</button>
+                <button class="filter-btn" data-filter="math">数とことば</button>
+                <button class="filter-btn" data-filter="world">世界・文化</button>
+            </div>
+
+            <!-- Grid -->
+            <div class="card-grid animate-fade-in delay-200" id="grid">
+                <!-- Items will be injected by JS -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const coolItems = [
+            { id: 1, cat: 'space', title: '88星座', desc: '全天に輝く88の星座名と学名。ギリシャ神話もセットで語れるとかっこいい。', stars: 4 },
+            { id: 2, cat: 'math', title: '円周率100桁', desc: '3.141592... 無限に続く数の神秘。ただただ圧倒的な「記憶力」を見せつけるならこれ。', stars: 5 },
+            { id: 3, cat: 'history', title: '歴代元号', desc: '大化から令和まで。日本の歴史の流れが頭に入っていると、古典文学も深く味わえる。', stars: 3 },
+            { id: 4, cat: 'world', title: '世界の首都', desc: '「スリランカの首都は？」と聞かれて即答できるとかっこいい。（正解：スリ・ジャヤワルダナプラ・コッテ）', stars: 3 },
+            { id: 5, cat: 'space', title: '太陽系の衛星', desc: '木星のガリレオ衛星（イオ、エウロパ、ガニメデ、カリスト）。名前の響きが美しい。', stars: 4 },
+            { id: 6, cat: 'world', title: '国旗', desc: '色や模様の意味を知ると、その国の歴史や宗教が見えてくる。教養の極み。', stars: 3 },
+            { id: 7, cat: 'math', title: '素数（100まで）', desc: '2, 3, 5, 7, 11... 孤独な数字たち。落ち着きたい時に唱えると良い（プッチ神父推奨）。', stars: 5 },
+            { id: 8, cat: 'culture', title: '難読漢字', desc: '「薔薇」「憂鬱」「檸檬」。書けなくても読めるだけで「只者ではない」感が出る。', stars: 2 },
+            { id: 9, cat: 'history', title: '世界史の年号', desc: '「1492年（意欲に燃えるコロンブス）」。歴史の縦軸と横軸が繋がると世界が広がる。', stars: 4 },
+        ];
+
+        const grid = document.getElementById('grid');
+        const buttons = document.querySelectorAll('.filter-btn');
+
+        function render(filter) {
+            grid.innerHTML = '';
+            const items = filter === 'all' ? coolItems : coolItems.filter(i => i.cat === filter || (filter === 'world' && i.cat === 'culture')); // grouping culture into world for now or simple mapping
+
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'cool-card animate-fade-in';
+                div.style.animationDelay = `${index * 0.05}s`;
+                div.innerHTML = `
+                    <span class="card-cat">${item.cat}</span>
+                    <h3 class="card-title">${item.title}</h3>
+                    <p class="card-desc">${item.desc}</p>
+                    <div class="coolness">かっこよさ ${'★'.repeat(item.stars)}${'☆'.repeat(5 - item.stars)}</div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // Init
+        render('all');
+
+        // Event Listeners
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render(btn.dataset.filter);
+            });
+        });
+    </script>
+</body>
+
+</html>

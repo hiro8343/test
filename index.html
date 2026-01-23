@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楽しい暗記サイト | Memorization is a Game</title>
+    <meta name="description" content="暗記は覚える作業じゃなくて、遊び方を発見するゲーム。">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    
+    <style>
+        /* Top Page Specific Styles */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            z-index: 10;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            color: var(--text-muted);
+            margin-bottom: 4rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .area-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 4rem 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .area-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .area-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .area-card:hover::before {
+            opacity: 1;
+        }
+
+        .area-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-color);
+        }
+
+        .area-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .area-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .area-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        /* Area specific accent colors */
+        .area-game { --accent-color: var(--accent-pink); }
+        .area-guide { --accent-color: var(--accent-cyan); }
+        .area-lab { --accent-color: var(--accent-green); }
+        .area-cool { --accent-color: var(--accent-purple); }
+
+        /* Background decorations */
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.3;
+        }
+        .orb-1 { width: 400px; height: 400px; background: var(--accent-purple); top: -100px; left: -100px; animation: float 8s infinite alternate; }
+        .orb-2 { width: 300px; height: 300px; background: var(--accent-cyan); bottom: 10%; right: -50px; animation: float 6s infinite alternate-reverse; }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <span class="animate-fade-in" style="color: var(--accent-cyan); font-weight: bold; letter-spacing: 0.1em; display: block; margin-bottom: 1rem;">MEMORIZATION IS A GAME</span>
+                <h1 class="animate-fade-in delay-100">
+                    暗記は<br>
+                    <span class="text-gradient">遊び方を発見するゲーム</span>
+                </h1>
+                <p class="animate-fade-in delay-200">
+                    正解より「楽しさ」を。<br>
+                    努力量より「好奇心」を。<br>
+                    あなただけのプレイスタイルを見つけよう。
+                </p>
+                
+                <div class="area-nav animate-fade-in delay-300" id="area-nav">
+                    <!-- Area 1 -->
+                    <a href="game.html" class="area-card area-game">
+                        <span class="area-icon">🕹️</span>
+                        <h3>暗記というゲーム</h3>
+                        <p>あなたに合う攻略法は？<br>まずはプレイスタイル診断。</p>
+                    </a>
+                    
+                    <!-- Area 2 -->
+                    <a href="guide.html" class="area-card area-guide">
+                        <span class="area-icon">📘</span>
+                        <h3>暗記のノウハウ</h3>
+                        <p>攻略本をのぞく。<br>使える武器（スキル）を探す。</p>
+                    </a>
+
+                    <!-- Area 3 -->
+                    <a href="lab.html" class="area-card area-lab">
+                        <span class="area-icon">🔬</span>
+                        <h3>暗記研究所</h3>
+                        <p>脳の仕組みや記憶の不思議。<br>知的ワクワクをチャージ。</p>
+                    </a>
+
+                    <!-- Area 4 -->
+                    <a href="cool.html" class="area-card area-cool">
+                        <span class="area-icon">✨</span>
+                        <h3>暗記したらかっこいい</h3>
+                        <p>語りたくなるような<br>ロマンあふれる知識たち。</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/main.js"></script>
+    <script>
+        // Subtle mouse follow effect for cards
+        document.getElementById('area-nav').onmousemove = e => {
+            for(const card of document.getElementsByClassName("area-card")) {
+                const rect = card.getBoundingClientRect(),
+                      x = e.clientX - rect.left,
+                      y = e.clientY - rect.top;
+
+                card.style.setProperty("--mouse-x", `${x}px`);
+                card.style.setProperty("--mouse-y", `${y}px`);
+            };
+        }
+    </script>
+</body>
+</html>

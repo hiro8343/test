@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗記というゲーム | 楽しい暗記サイト</title>
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+
+    <style>
+        .game-header {
+            text-align: center;
+            padding: 4rem 0 2rem;
+        }
+
+        .diagnosis-section {
+            max-width: 800px;
+            margin: 2rem auto 6rem;
+            min-height: 400px;
+        }
+
+        .intro-card {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .diagnosis-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            margin: 1rem 0;
+        }
+
+        .result-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .result-weapon {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: bold;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            display: inline-block;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            opacity: 0.7;
+        }
+
+        .nav-back:hover {
+            opacity: 1;
+        }
+
+        /* Declaration Section */
+        .declaration {
+            text-align: center;
+            margin: 6rem 0;
+            padding: 4rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .declaration h2 {
+            margin-bottom: 2rem;
+        }
+
+        .rule-item {
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="index.html" class="nav-back">← Topに戻る</a>
+
+        <header class="game-header animate-fade-in">
+            <span style="color: var(--accent-pink); font-weight: bold;">AREA 1: THE GAME</span>
+            <h1 class="text-gradient">暗記プレイスタイル診断</h1>
+            <p>あなたに合った「戦い方」を見つけよう。</p>
+        </header>
+
+        <main>
+            <!-- Diagnosis UI -->
+            <section class="diagnosis-section">
+                <!-- Intro -->
+                <div class="glass-card intro-card animate-fade-in delay-100" id="intro">
+                    <h2>あなたの脳のクセは？</h2>
+                    <p style="margin: 1.5rem 0 2rem; color: var(--text-muted);">
+                        RPGで「戦士」や「魔法使い」を選ぶように、<br>
+                        暗記にも「自分に合った職業（スタイル）」があります。<br>
+                        5つの質問で、あなたのタイプを分析します。
+                    </p>
+                    <button id="start-diagnosis" class="btn btn-primary">診断スタート</button>
+                </div>
+
+                <!-- Game Area (Hidden initially) -->
+                <div id="diagnosis-area" style="display: none;">
+                    <div id="question-container"></div>
+                </div>
+
+                <!-- Result Area (Hidden initially) -->
+                <div id="result-container" style="display: none; text-align: center;"></div>
+            </section>
+
+            <!-- Concept Declaration -->
+            <section class="declaration animate-fade-in delay-200">
+                <h2>暗記は“ゲーム”である宣言</h2>
+                <div class="rule-item">
+                    <span style="color: var(--accent-pink);">●</span> 失敗 ＝ <span
+                        style="font-weight: bold;">経験値ゲット</span>
+                </div>
+                <div class="rule-item">
+                    <span style="color: var(--accent-cyan);">●</span> 忘却 ＝ <span
+                        style="font-weight: bold;">ただのセーブポイント</span>
+                </div>
+                <div class="rule-item">
+                    <span style="color: var(--accent-green);">●</span> 暗記 ＝ <span
+                        style="font-weight: bold;">冒険の始まり</span>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="scripts/diagnosis.js"></script>
+</body>
+
+</html>
