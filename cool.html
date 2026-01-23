@@ -58,6 +58,7 @@
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .cool-card:hover {
@@ -91,6 +92,76 @@
             margin-top: 1rem;
             color: #ffd700;
             font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .char-count {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
+        dialog {
+            background: transparent;
+            border: none;
+            padding: 0;
+            max-width: 90vw;
+            width: 600px;
+            color: var(--text-main);
+            margin: auto;
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #1a1a24;
+            border: 1px solid var(--accent-purple);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: 0 0 50px rgba(188, 19, 254, 0.3);
+            position: relative;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+            line-height: 1.8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-meta {
+            margin-bottom: 1rem;
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -118,46 +189,90 @@
             <!-- Grid -->
             <div class="card-grid animate-fade-in delay-200" id="grid">
                 <!-- Items will be injected by JS -->
+                <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Loading data...</p>
             </div>
         </main>
     </div>
 
-    <script>
-        const coolItems = [
-            { id: 1, cat: 'space', title: '88星座', desc: '全天に輝く88の星座名と学名。ギリシャ神話もセットで語れるとかっこいい。', stars: 4 },
-            { id: 2, cat: 'math', title: '円周率100桁', desc: '3.141592... 無限に続く数の神秘。ただただ圧倒的な「記憶力」を見せつけるならこれ。', stars: 5 },
-            { id: 3, cat: 'history', title: '歴代元号', desc: '大化から令和まで。日本の歴史の流れが頭に入っていると、古典文学も深く味わえる。', stars: 3 },
-            { id: 4, cat: 'world', title: '世界の首都', desc: '「スリランカの首都は？」と聞かれて即答できるとかっこいい。（正解：スリ・ジャヤワルダナプラ・コッテ）', stars: 3 },
-            { id: 5, cat: 'space', title: '太陽系の衛星', desc: '木星のガリレオ衛星（イオ、エウロパ、ガニメデ、カリスト）。名前の響きが美しい。', stars: 4 },
-            { id: 6, cat: 'world', title: '国旗', desc: '色や模様の意味を知ると、その国の歴史や宗教が見えてくる。教養の極み。', stars: 3 },
-            { id: 7, cat: 'math', title: '素数（100まで）', desc: '2, 3, 5, 7, 11... 孤独な数字たち。落ち着きたい時に唱えると良い（プッチ神父推奨）。', stars: 5 },
-            { id: 8, cat: 'culture', title: '難読漢字', desc: '「薔薇」「憂鬱」「檸檬」。書けなくても読めるだけで「只者ではない」感が出る。', stars: 2 },
-            { id: 9, cat: 'history', title: '世界史の年号', desc: '「1492年（意欲に燃えるコロンブス）」。歴史の縦軸と横軸が繋がると世界が広がる。', stars: 4 },
-        ];
+    <!-- Modal -->
+    <dialog id="detail-modal">
+        <div class="modal-content">
+            <button id="close-modal" class="close-btn">&times;</button>
+            <span class="card-cat" id="modal-cat">CATEGORY</span>
+            <h2 id="modal-title" style="margin-bottom: 0.5rem; color: #fff;">Title</h2>
+            <div class="modal-meta">文字数: <span id="modal-length">0</span>文字</div>
+            <p id="modal-desc" style="color: var(--text-muted); margin-bottom: 1rem;">Description</p>
+            <div class="modal-body custom-scrollbar" id="modal-content">
+                Content...
+            </div>
+        </div>
+    </dialog>
 
+    <script>
         const grid = document.getElementById('grid');
         const buttons = document.querySelectorAll('.filter-btn');
+        const modal = document.getElementById('detail-modal');
+        const closeModal = document.getElementById('close-modal');
+        let coolItems = [];
+
+        // Fetch Data
+        async function loadData() {
+            try {
+                const response = await fetch('data/cool_items.json');
+                coolItems = await response.json();
+                render('all');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-pink);">データの読み込みに失敗しました。</p>';
+            }
+        }
 
         function render(filter) {
             grid.innerHTML = '';
-            const items = filter === 'all' ? coolItems : coolItems.filter(i => i.cat === filter || (filter === 'world' && i.cat === 'culture')); // grouping culture into world for now or simple mapping
+            const items = filter === 'all' ? coolItems : coolItems.filter(i => i.category === filter || (filter === 'world' && i.category === 'culture'));
+
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">アイテムがありません。</p>';
+                return;
+            }
 
             items.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'cool-card animate-fade-in';
                 div.style.animationDelay = `${index * 0.05}s`;
+
+                // Calculate length if exists, otherwise display 0 or approximate
+                const length = item.content ? item.content.length : 0;
+
                 div.innerHTML = `
-                    <span class="card-cat">${item.cat}</span>
+                    <span class="card-cat">${item.category}</span>
                     <h3 class="card-title">${item.title}</h3>
-                    <p class="card-desc">${item.desc}</p>
-                    <div class="coolness">かっこよさ ${'★'.repeat(item.stars)}${'☆'.repeat(5 - item.stars)}</div>
+                    <p class="card-desc">${item.description}</p>
+                    <div class="coolness">
+                        <span>かっこよさ ${'★'.repeat(item.stars)}${'☆'.repeat(5 - item.stars)}</span>
+                        <span class="char-count">${length}文字</span>
+                    </div>
                 `;
+
+                // Add click event for modal
+                div.addEventListener('click', () => openModal(item));
+
                 grid.appendChild(div);
             });
         }
 
+        function openModal(item) {
+            document.getElementById('modal-cat').textContent = item.category;
+            document.getElementById('modal-title').textContent = item.title;
+            document.getElementById('modal-desc').textContent = item.description;
+            document.getElementById('modal-content').textContent = item.content || 'データがありません';
+            document.getElementById('modal-length').textContent = item.content ? item.content.length : 0;
+
+            modal.showModal();
+        }
+
         // Init
-        render('all');
+        loadData();
 
         // Event Listeners
         buttons.forEach(btn => {
@@ -166,6 +281,20 @@
                 btn.classList.add('active');
                 render(btn.dataset.filter);
             });
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.close();
+        });
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            const rect = modal.getBoundingClientRect();
+            const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+                rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
+            if (!isInDialog) {
+                modal.close();
+            }
         });
     </script>
 </body>
