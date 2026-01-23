@@ -163,6 +163,41 @@
             color: var(--accent-cyan);
             font-size: 0.9rem;
         }
+
+        .modal-links {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .link-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .link-btn-exp {
+            background: rgba(188, 19, 254, 0.2);
+            color: #e0aaff;
+            border-color: var(--accent-purple);
+        }
+
+        .link-btn-word {
+            background: rgba(0, 255, 255, 0.1);
+            color: #aaffff;
+            border-color: var(--accent-cyan);
+        }
+
+        .link-btn:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -201,6 +236,7 @@
             <span class="card-cat" id="modal-cat">CATEGORY</span>
             <h2 id="modal-title" style="margin-bottom: 0.5rem; color: #fff;">Title</h2>
             <div class="modal-meta">文字数: <span id="modal-length">0</span>文字</div>
+            <div id="modal-links" class="modal-links"></div>
             <p id="modal-desc" style="color: var(--text-muted); margin-bottom: 1rem;">Description</p>
             <div class="modal-body custom-scrollbar" id="modal-content">
                 Content...
@@ -267,6 +303,30 @@
             document.getElementById('modal-desc').textContent = item.description;
             document.getElementById('modal-content').textContent = item.content || 'データがありません';
             document.getElementById('modal-length').textContent = item.content ? item.content.length : 0;
+
+            // Render Links
+            const linksContainer = document.getElementById('modal-links');
+            linksContainer.innerHTML = ''; // Clear previous links
+
+            if (item.explanationUrl) {
+                const a = document.createElement('a');
+                a.href = item.explanationUrl;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = 'link-btn link-btn-exp';
+                a.textContent = '📖 解説を見る';
+                linksContainer.appendChild(a);
+            }
+
+            if (item.wordUrl) {
+                const a = document.createElement('a');
+                a.href = item.wordUrl;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = 'link-btn link-btn-word';
+                a.textContent = '✨ 暗記リストを見る';
+                linksContainer.appendChild(a);
+            }
 
             modal.showModal();
         }
