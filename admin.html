@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Check Center | 楽しい暗記サイト</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        body {
+            background: #0f0f13;
+            color: #eee;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .h1-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: top;
+        }
+
+        .data-table th {
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--accent-cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .id-col {
+            width: 50px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .cat-col {
+            width: 100px;
+        }
+
+        .title-col {
+            width: 200px;
+            font-weight: bold;
+        }
+
+        .url-col {
+            width: 150px;
+        }
+
+        .desc-col {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tag-space {
+            color: #a985ff;
+            border: 1px solid #a985ff;
+            background: rgba(169, 133, 255, 0.1);
+        }
+
+        .tag-math {
+            color: #85ffbd;
+            border: 1px solid #85ffbd;
+            background: rgba(133, 255, 189, 0.1);
+        }
+
+        .tag-world {
+            color: #85d5ff;
+            border: 1px solid #85d5ff;
+            background: rgba(133, 213, 255, 0.1);
+        }
+
+        .tag-history {
+            color: #ffbd85;
+            border: 1px solid #ffbd85;
+            background: rgba(255, 189, 133, 0.1);
+        }
+
+        .tag-culture {
+            color: #ff85c2;
+            border: 1px solid #ff85c2;
+            background: rgba(255, 133, 194, 0.1);
+        }
+
+        .btn-check {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: rgba(188, 19, 254, 0.2);
+            color: #dcb0ff;
+            border: 1px solid var(--accent-purple);
+        }
+
+        .btn-info {
+            background: rgba(0, 255, 255, 0.1);
+            color: #afffff;
+            border: 1px solid var(--accent-cyan);
+        }
+
+        .btn-check:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+
+        .status-missing {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">ADMINISTRATION</div>
+                <h1 class="h1-title">Data Verification Center</h1>
+            </div>
+            <a href="index.html" style="color: var(--text-muted); text-decoration: none;">← Back to Site</a>
+        </header>
+
+        <main>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="id-col">ID</th>
+                        <th class="cat-col">CAT</th>
+                        <th class="title-col">TITLE</th>
+                        <th class="url-col">EXPLANATION</th>
+                        <th class="url-col">WORD LIST</th>
+                        <th class="desc-col">CONTENT PREVIEW</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Data injected here -->
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script>
+        const tbody = document.getElementById('table-body');
+
+        async function loadData() {
+            try {
+                const response = await fetch('data/cool_items.json');
+                const data = await response.json();
+                renderTable(data);
+            } catch (error) {
+                console.error('Error:', error);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red; padding:2rem;">Failed to load data. json data might be broken.</td></tr>';
+            }
+        }
+
+        function renderTable(data) {
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+
+                // Url Buttons
+                const expBtn = item.explanationUrl
+                    ? `<a href="${item.explanationUrl}" target="_blank" class="btn-check btn-primary">📖 Open URL</a>`
+                    : '<span class="status-missing">⚠️ NO URL</span>';
+
+                const wordBtn = item.wordUrl
+                    ? `<a href="${item.wordUrl}" target="_blank" class="btn-check btn-info">✨ Open URL</a>`
+                    : '<span class="status-missing">⚠️ NO URL</span>';
+
+                // Truncate content
+                const contentPreview = item.content && item.content.length > 50
+                    ? item.content.substring(0, 50) + '...'
+                    : (item.content || '<span style="color:#555">(empty)</span>');
+
+                tr.innerHTML = `
+                    <td class="id-col">#${item.id}</td>
+                    <td><span class="tag tag-${item.category}">${item.category}</span></td>
+                    <td class="title-col">${item.title}</td>
+                    <td>${expBtn}</td>
+                    <td>${wordBtn}</td>
+                    <td class="desc-col">${contentPreview}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        loadData();
+    </script>
+</body>
+
+</html>
