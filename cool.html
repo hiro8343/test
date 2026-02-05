@@ -251,15 +251,110 @@
         const closeModal = document.getElementById('close-modal');
         let coolItems = [];
 
+        // Google Sheet CSV URL
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1IN-PC0r_y6WHSQs1-Xklakj72LYm43q6xUspQ0KueXE/gviz/tq?tqx=out:csv&sheet=精緻化';
+
+        // Category Mapping (Japanese in Sheet -> ID in App)
+        const CATEGORY_MAP = {
+            '言語': 'math',   // 数とことば
+            '数学': 'math',
+            '歴史': 'history', // 時間・歴史
+            '地理': 'world',   // 世界・文化
+            '公民': 'world',
+            '理科': 'space',   // 宇宙・自然
+            '生物': 'space',
+            '地学': 'space',
+            '雑学': 'culture', // その他
+            '文化': 'culture'
+        };
+
+        // CSV Parser
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line) continue;
+                
+                // Simple CSV parser that handles quoted strings with commas
+                const matches = [];
+                let currentMatch = '';
+                let inQuote = false;
+                
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        inQuote = !inQuote;
+                    } else if (char === ',' && !inQuote) {
+                        matches.push(currentMatch);
+                        currentMatch = '';
+                    } else {
+                        currentMatch += char;
+                    }
+                }
+                matches.push(currentMatch);
+
+                // Clean up quotes
+                const row = matches.map(cell => {
+                    cell = cell.trim();
+                    if (cell.startsWith('"') && cell.endsWith('"')) {
+                        cell = cell.slice(1, -1);
+                    }
+                    return cell.replace(/""/g, '"'); // Handle escaped quotes
+                });
+
+                if (row.length < 4) continue; // Skip empty/malformed rows
+
+                // Skip header if detected 
+                if (i === 0 && (row[0] === 'カテゴリ' || row[0] === 'Category' || row[0] === 'ジャンル')) continue;
+
+                const catKey = CATEGORY_MAP[row[0]] || 'culture';
+                
+                // Active check (col 6)
+                const isActive = row[6] === '◯' || row[6] === '○' || !row[6]; 
+                
+                if (isActive) {
+                     result.push({
+                        id: i, 
+                        category: catKey,
+                        originalCategory: row[0],
+                        title: row[1],
+                        description: row[2],
+                        content: row[3],
+                        stars: 3, 
+                        explanationUrl: row[7] || null,
+                        wordUrl: null 
+                    });
+                }
+            }
+            return result;
+        }
+
         // Fetch Data
         async function loadData() {
             try {
-                const response = await fetch('data/cool_items.json');
-                coolItems = await response.json();
+                // Show loading state
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Loading data from Google Sheets...</p>';
+                
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const text = await response.text();
+                
+                coolItems = parseCSV(text);
                 render('all');
             } catch (error) {
                 console.error('Error loading data:', error);
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-pink);">データの読み込みに失敗しました。</p>';
+                
+                // Fallback to local JSON
+                try {
+                    console.log('Falling back to local JSON...');
+                    const response = await fetch('data/cool_items.json');
+                    coolItems = await response.json();
+                    render('all');
+                } catch (e) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-pink);">データの読み込みに失敗しました。</p>';
+                }
             }
         }
 
