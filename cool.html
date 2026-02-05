@@ -264,6 +264,7 @@
             '理科': 'space',   // 宇宙・自然
             '生物': 'space',
             '地学': 'space',
+            '宇宙': 'space',   // Added '宇宙'
             '雑学': 'culture', // その他
             '文化': 'culture'
         };
@@ -276,12 +277,12 @@
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim();
                 if (!line) continue;
-                
+
                 // Simple CSV parser that handles quoted strings with commas
                 const matches = [];
                 let currentMatch = '';
                 let inQuote = false;
-                
+
                 for (let j = 0; j < line.length; j++) {
                     const char = line[j];
                     if (char === '"') {
@@ -307,24 +308,24 @@
                 if (row.length < 4) continue; // Skip empty/malformed rows
 
                 // Skip header if detected 
-                if (i === 0 && (row[0] === 'カテゴリ' || row[0] === 'Category' || row[0] === 'ジャンル')) continue;
+                if (i === 0 && (row[0] === 'カテゴリ' || row[0] === 'カテゴリー' || row[0] === 'Category' || row[0] === 'ジャンル')) continue;
 
                 const catKey = CATEGORY_MAP[row[0]] || 'culture';
-                
+
                 // Active check (col 6)
-                const isActive = row[6] === '◯' || row[6] === '○' || !row[6]; 
-                
+                const isActive = row[6] === '◯' || row[6] === '○' || !row[6];
+
                 if (isActive) {
-                     result.push({
-                        id: i, 
+                    result.push({
+                        id: i,
                         category: catKey,
                         originalCategory: row[0],
                         title: row[1],
                         description: row[2],
                         content: row[3],
-                        stars: 3, 
+                        stars: 3,
                         explanationUrl: row[7] || null,
-                        wordUrl: null 
+                        wordUrl: null
                     });
                 }
             }
@@ -336,16 +337,16 @@
             try {
                 // Show loading state
                 grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Loading data from Google Sheets...</p>';
-                
+
                 const response = await fetch(SHEET_CSV_URL);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const text = await response.text();
-                
+
                 coolItems = parseCSV(text);
                 render('all');
             } catch (error) {
                 console.error('Error loading data:', error);
-                
+
                 // Fallback to local JSON
                 try {
                     console.log('Falling back to local JSON...');
