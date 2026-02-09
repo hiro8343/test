@@ -144,114 +144,22 @@
         </header>
 
         <main>
-            <!-- Basic Skills -->
-            <section>
-                <div class="section-title animate-fade-in delay-100">
-                    <h2 style="color: var(--accent-green);">🔓 基本スキル (Basic)</h2>
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">まずはここから装備しよう</span>
-                </div>
+            <!-- フィルタ（オプション） -->
+            <div style="text-align: center; margin-bottom: 2rem;" class="animate-fade-in delay-100">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">自分に合ったスタイルを探してみよう</p>
+            </div>
 
-                <div class="skill-grid animate-fade-in delay-200">
-                    <!-- Skill 1 -->
-                    <div class="skill-card" onclick="openModal('img')">
-                        <div class="skill-header">
-                            <span class="skill-icon">🖼️</span>
-                            <span class="skill-tag tag-basic">Level 1</span>
-                        </div>
-                        <div class="skill-body">
-                            <h3>イメージ化</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">言葉を「絵」に変換する基本技。
-                            </p>
-                            <span class="try-btn">3分実験へ</span>
-                        </div>
-                    </div>
-
-                    <!-- Skill 2 -->
-                    <div class="skill-card" onclick="openModal('chunk')">
-                        <div class="skill-header">
-                            <span class="skill-icon">🔪</span>
-                            <span class="skill-tag tag-basic">Level 1</span>
-                        </div>
-                        <div class="skill-body">
-                            <h3>チャンキング（分解）</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">長い情報を一口サイズに切る。</p>
-                            <span class="try-btn">解説を見る</span>
-                        </div>
-                    </div>
-
-                    <!-- Skill 3 -->
-                    <div class="skill-card" onclick="openModal('emotion')">
-                        <div class="skill-header">
-                            <span class="skill-icon">❤️</span>
-                            <span class="skill-tag tag-basic">Level 2</span>
-                        </div>
-                        <div class="skill-body">
-                            <h3>感情フック</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">「ウケる」「キモい」で記憶強化。
-                            </p>
-                            <span class="try-btn">解説を見る</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Advanced Tech -->
-            <section>
-                <div class="section-title animate-fade-in delay-300">
-                    <h2 style="color: var(--accent-purple);">🧠 上級テクニック (Advanced)</h2>
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">チート級の強さを手に入れる</span>
-                </div>
-
-                <div class="skill-grid animate-fade-in delay-400">
-                    <!-- Tech 1 -->
-                    <div class="skill-card" onclick="openModal('palace')">
-                        <div class="skill-header">
-                            <span class="skill-icon">🏰</span>
-                            <span class="skill-tag tag-advanced">SR</span>
-                        </div>
-                        <div class="skill-body">
-                            <h3>記憶の宮殿</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">
-                                おなじみの場所に知識を配置する、世界記憶力選手権御用達の最強魔法。</p>
-                            <span class="try-btn">秘密を見る</span>
-                        </div>
-                    </div>
-
-                    <!-- Tech 2 -->
-                    <div class="skill-card" onclick="openModal('sr')">
-                        <div class="skill-header">
-                            <span class="skill-icon">📉</span>
-                            <span class="skill-tag tag-advanced">R</span>
-                        </div>
-                        <div class="skill-body">
-                            <h3>間隔反復 (Spaced Repetition)</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">
-                                「忘れかけた頃」に復習するタイミング管理術。</p>
-                            <span class="try-btn">秘密を見る</span>
-                        </div>
-                    </div>
-
-                    <!-- Tech 3 -->
-                    <div class="skill-card" onclick="openModal('feynman')">
-                        <div class="skill-header">
-                            <span class="skill-icon">👶</span>
-                            <span class="skill-tag tag-advanced">R</span>
-                        </div>
-                        <div class="skill-body">
-                            <h3>フェインマン・テクニック</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0;">
-                                「6歳の子供に説明するつもり」で理解を深める。</p>
-                            <span class="try-btn">秘密を見る</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <!-- Skill Grid -->
+            <div class="skill-grid animate-fade-in delay-200" id="skill-grid">
+                <!-- Data will be injected here -->
+                <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Loading strategies...</p>
+            </div>
         </main>
     </div>
 
     <!-- Modal Template -->
     <div id="modal" class="modal" onclick="if(event.target === this) closeModal()">
-        <div class="modal-content">
+        <div class="modal-content animate-pop-in">
             <span class="close-modal" onclick="closeModal()">×</span>
             <div id="modal-body">
                 <!-- Content injected by JS -->
@@ -260,47 +168,179 @@
     </div>
 
     <script>
-        const contentData = {
-            img: {
-                title: "🖼️ イメージ化の術",
-                text: "脳は文字よりも画像を何倍も強く記憶します。<br><br>【実験】<br>「リンゴ、時計、宇宙」と覚えるより、<br>「宇宙空間に巨大なリンゴが浮かんでいて、その周りを時計が回っている」<br>という奇妙な映像を頭に思い浮かべてください。<br>…どうですか？文字より簡単に覚えられませんか？"
-            },
-            chunk: {
-                title: "🔪 チャンキング",
-                text: "電話番号を「09012345678」と一気に覚えるのは無理でも、「090-1234-5678」と区切れば覚えられます。<br>これがチャンキング。<br>情報を意味のあるカタマリ（チャンク）に分けることで、脳の処理容量（ワーキングメモリ）を節約できます。"
-            },
-            emotion: {
-                title: "❤️ 感情フック",
-                text: "「昨日食べたランチ」は忘れても、「人生で一番まずかった料理」は一生忘れません。<br>扁桃体（感情）が海馬（記憶）を刺激するからです。<br>覚えたい単語に変な顔を描いたり、大げさなストーリーを作って「バカバカしい！」と笑ったりするのがコツです。"
-            },
-            palace: {
-                title: "🏰 記憶の宮殿",
-                text: "シャーロック・ホームズも使う最強の記憶術。<br>1. よく知っている場所（自宅や通学路）を思い浮かべる。<br>2. 覚えたいものを、その場所の特定のポイントに「置く」イメージをする。<br>3. 思い出す時は、頭の中でその場所を歩き回って回収する。<br><br>空間認識能力を使うので、順番通りに大量に覚えるのに最強です。"
-            },
-            sr: {
-                title: "📉 間隔反復 (Spaced Repetition)",
-                text: "人間は覚えた1時間後には半分以上忘れます（エビングハウスの忘却曲線）。<br>しかし、「忘れかけたタイミング」で復習すると記憶が強固になります。<br>1日後、3日後、1週間後、1ヶ月後…と間隔を広げて復習するのが科学的に最強の効率です。"
-            },
-            feynman: {
-                title: "👶 フェインマン・テクニック",
-                text: "ノーベル賞物理学者リチャード・フェインマンの学習法。<br>1. コンセプトを選ぶ。<br>2. 専門用語を使わず、子供にもわかるように説明してみる。<br>3. うまく説明できない部分が、自分が理解していない部分。<br>「説明できる」＝「覚えている」です。"
-            }
-        };
+        const grid = document.getElementById('skill-grid');
+        const modal = document.getElementById('modal');
+        let guideData = [];
 
-        function openModal(key) {
-            const data = contentData[key];
+        // Google Sheet CSV URL (Guide sheet)
+        // Using gviz URL for better CSV output
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1IN-PC0r_y6WHSQs1-Xklakj72LYm43q6xUspQ0KueXE/gviz/tq?tqx=out:csv&gid=1225737060';
+
+        // CSV Parser
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line) continue;
+
+                const matches = [];
+                let currentMatch = '';
+                let inQuote = false;
+
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        inQuote = !inQuote;
+                    } else if (char === ',' && !inQuote) {
+                        matches.push(currentMatch);
+                        currentMatch = '';
+                    } else {
+                        currentMatch += char;
+                    }
+                }
+                matches.push(currentMatch);
+
+                const row = matches.map(cell => {
+                    cell = cell.trim();
+                    if (cell.startsWith('"') && cell.endsWith('"')) {
+                        cell = cell.slice(1, -1);
+                    }
+                    return cell.replace(/""/g, '"');
+                });
+
+                // Header check: "No","名前","分類","向いている人","使い方","具体例"
+                if (i === 0) continue;
+                if (row.length < 6) continue;
+
+                // Simple check if it's a valid data row (e.g. check if ID is a number)
+                if (isNaN(parseInt(row[0]))) continue;
+
+                result.push({
+                    id: row[0],
+                    title: row[1],
+                    category: row[2],
+                    target: row[3],
+                    usage: row[4],
+                    example: row[5]
+                });
+            }
+            return result;
+        }
+
+        async function loadData() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const text = await response.text();
+                guideData = parseCSV(text);
+                render(guideData);
+            } catch (error) {
+                console.error('Error loading sheet data:', error);
+                // Fallback
+                try {
+                    const response = await fetch('data/guide_methods.json');
+                    guideData = await response.json();
+                    render(guideData);
+                } catch (e) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-pink);">データの読み込みに失敗しました。</p>';
+                }
+            }
+        }
+
+        function render(items) {
+            grid.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'skill-card animate-fade-in';
+                div.style.animationDelay = `${index * 0.05}s`;
+
+                // アイコンの自動割り当て (簡易的)
+                let icon = '📝';
+                if (item.category.includes('イメージ')) icon = '🖼️';
+                else if (item.category.includes('音声') || item.category.includes('音楽')) icon = '🎵';
+                else if (item.category.includes('構造') || item.category.includes('整理')) icon = '🏗️';
+                else if (item.category.includes('身体')) icon = '💪';
+                else if (item.category.includes('反復')) icon = '🔁';
+                else if (item.category.includes('物語') || item.category.includes('創作')) icon = '📖';
+
+                // タグの色分け
+                let tagClass = 'tag-basic';
+                if (item.category.includes('構造') || item.category.includes('整理')) tagClass = 'tag-advanced';
+
+                div.innerHTML = `
+                    <div class="skill-header">
+                        <span class="skill-icon">${icon}</span>
+                        <span class="skill-tag ${tagClass}">${item.category}</span>
+                    </div>
+                    <div class="skill-body">
+                        <h3>${item.title}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            ${item.usage}
+                        </p>
+                        <span class="try-btn">詳細を見る</span>
+                    </div>
+                `;
+
+                div.addEventListener('click', () => openModal(item));
+                grid.appendChild(div);
+            });
+        }
+
+        function openModal(data) {
             const modalBody = document.getElementById('modal-body');
+
             modalBody.innerHTML = `
-                <h2 style="margin-bottom: 1rem; color: var(--accent-cyan);">${data.title}</h2>
-                <p style="line-height: 1.8; color: var(--text-main);">${data.text}</p>
-                <button onclick="closeModal()" class="btn btn-primary" style="margin-top: 2rem; width: 100%;">閉じる</button>
+                <div style="margin-bottom: 1.5rem;">
+                    <span style="background: rgba(0, 243, 255, 0.1); color: var(--accent-cyan); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid rgba(0, 243, 255, 0.3);">
+                        ${data.category}
+                    </span>
+                </div>
+                <h2 style="margin-bottom: 1.5rem; color: #fff; font-size: 1.8rem;">${data.title}</h2>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: var(--accent-green); margin-bottom: 0.5rem;">👤 向いている人</h4>
+                    <p style="color: var(--text-main); font-size: 0.95rem;">${data.target}</p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">⚔️ 使い方</h4>
+                    <p style="color: var(--text-main); line-height: 1.6;">${data.usage}</p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-purple);">
+                    <h4 style="color: var(--accent-purple); margin-bottom: 0.5rem; font-size: 0.9rem;">💡 具体例</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">${data.example}</p>
+                </div>
+
+                <button onclick="closeModal()" class="btn btn-primary" style="margin-top: 2rem; width: 100%; padding: 12px; background: var(--hover-card); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                    閉じる
+                </button>
             `;
-            document.getElementById('modal').style.display = 'flex';
+
+            // ボタンのホバーエフェクト（インラインでも書けるがJSで制御してもよい）
+            const btn = modalBody.querySelector('button');
+            btn.onmouseover = () => {
+                btn.style.background = 'var(--accent-cyan)';
+                btn.style.color = '#000';
+            };
+            btn.onmouseout = () => {
+                btn.style.background = 'var(--hover-card)';
+                btn.style.color = 'var(--accent-cyan)';
+            };
+
+            modal.style.display = 'flex';
         }
 
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
         }
+
+        // Init
+        loadData();
+
     </script>
 </body>
 
