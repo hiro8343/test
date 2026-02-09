@@ -330,12 +330,10 @@
 
             items.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = 'skill-card animate-fade-in';
-                // アニメーション遅延をリセットして再描画時に綺麗に見せる
-                div.style.animation = 'none';
-                div.offsetHeight; /* trigger reflow */
+                div.className = 'skill-card';
+                // アニメーション適用（CSS側で定義された fadeInUp を使用）
+                div.style.opacity = '0'; // 初期状態は非表示
                 div.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.05}s`;
-                div.style.opacity = '0'; // 初期状態
 
                 // アイコンの自動割り当て (簡易的)
                 let icon = '📝';
