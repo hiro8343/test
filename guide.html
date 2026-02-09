@@ -130,6 +130,34 @@
             cursor: pointer;
             font-size: 1.5rem;
         }
+
+        /* Filter Styles */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            border-color: var(--accent-cyan);
+            color: #fff;
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
     </style>
 </head>
 
@@ -144,9 +172,14 @@
         </header>
 
         <main>
-            <!-- フィルタ（オプション） -->
-            <div style="text-align: center; margin-bottom: 2rem;" class="animate-fade-in delay-100">
-                <p style="color: var(--text-muted); font-size: 0.9rem;">自分に合ったスタイルを探してみよう</p>
+            <!-- フィルタ -->
+            <div class="animate-fade-in delay-100">
+                <div class="filters" id="filters">
+                    <button class="filter-btn active" onclick="filterItems('all')">All</button>
+                    <button class="filter-btn" onclick="filterItems('image')">イメージ・発想</button>
+                    <button class="filter-btn" onclick="filterItems('repeat')">反復・出力</button>
+                    <button class="filter-btn" onclick="filterItems('logic')">整理・理解</button>
+                </div>
             </div>
 
             <!-- Skill Grid -->
@@ -171,10 +204,18 @@
         const grid = document.getElementById('skill-grid');
         const modal = document.getElementById('modal');
         let guideData = [];
+        let currentFilter = 'all';
 
         // Google Sheet CSV URL (Guide sheet)
         // Using gviz URL for better CSV output
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1IN-PC0r_y6WHSQs1-Xklakj72LYm43q6xUspQ0KueXE/gviz/tq?tqx=out:csv&gid=1225737060';
+
+        // カテゴリ定義
+        const CATEGORY_GROUPS = {
+            'image': ['イメージ系', '変換系', '創造系', '創作系', '音楽系'],
+            'repeat': ['反復系', '音声系', '思い出し系', '身体系'],
+            'logic': ['構造系', '整理系', '論理系', 'その他']
+        };
 
         // CSV Parser
         function parseCSV(text) {
@@ -235,40 +276,78 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 const text = await response.text();
                 guideData = parseCSV(text);
-                render(guideData);
+                filterItems('all');
             } catch (error) {
                 console.error('Error loading sheet data:', error);
                 // Fallback
                 try {
                     const response = await fetch('data/guide_methods.json');
                     guideData = await response.json();
-                    render(guideData);
+                    filterItems('all');
                 } catch (e) {
                     grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-pink);">データの読み込みに失敗しました。</p>';
                 }
             }
         }
 
+        function filterItems(group) {
+            currentFilter = group;
+
+            // Update buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick').includes(group)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            if (group === 'all') {
+                render(guideData);
+                return;
+            }
+
+            const targetCategories = CATEGORY_GROUPS[group] || [];
+            const filtered = guideData.filter(item => {
+                // 部分一致も含める（例: "イメージ系" で "イメージ" を含むものなど）
+                // ここでは単純に配列に含まれるかで判定しつつ、柔軟性も持たせる
+                if (targetCategories.includes(item.category)) return true;
+
+                // データ側のカテゴリ表記が微妙に違う場合の救済
+                // 例: "イメージ" とかが来ても拾えるように
+                return targetCategories.some(cat => item.category.includes(cat.replace('系', '')));
+            });
+
+            render(filtered);
+        }
+
         function render(items) {
             grid.innerHTML = '';
+
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">該当する暗記法が見つかりませんでした。</p>';
+                return;
+            }
 
             items.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'skill-card animate-fade-in';
-                div.style.animationDelay = `${index * 0.05}s`;
+                // アニメーション遅延をリセットして再描画時に綺麗に見せる
+                div.style.animation = 'none';
+                div.offsetHeight; /* trigger reflow */
+                div.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.05}s`;
+                div.style.opacity = '0'; // 初期状態
 
                 // アイコンの自動割り当て (簡易的)
                 let icon = '📝';
-                if (item.category.includes('イメージ')) icon = '🖼️';
-                else if (item.category.includes('音声') || item.category.includes('音楽')) icon = '🎵';
+                if (item.category.includes('イメージ') || item.category.includes('音楽') || item.category.includes('創造')) icon = '🖼️';
+                else if (item.category.includes('反復') || item.category.includes('音声')) icon = '🔁';
                 else if (item.category.includes('構造') || item.category.includes('整理')) icon = '🏗️';
                 else if (item.category.includes('身体')) icon = '💪';
-                else if (item.category.includes('反復')) icon = '🔁';
-                else if (item.category.includes('物語') || item.category.includes('創作')) icon = '📖';
+                else if (item.category.includes('物語')) icon = '📖';
 
                 // タグの色分け
                 let tagClass = 'tag-basic';
-                if (item.category.includes('構造') || item.category.includes('整理')) tagClass = 'tag-advanced';
+                if (item.category.includes('構造') || item.category.includes('整理') || item.category.includes('論理')) tagClass = 'tag-advanced';
 
                 div.innerHTML = `
                     <div class="skill-header">
