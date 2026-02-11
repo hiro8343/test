@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗記検定 | Memorization Exam</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+
+    <style>
+        /* Exam Specific Styles */
+        .exam-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .exam-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .exam-header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Select View */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .theme-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .theme-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-card .meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Play View */
+        .game-ui {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            position: relative;
+        }
+
+        .game-info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+        }
+
+        .timer {
+            color: var(--accent-pink);
+            font-weight: bold;
+        }
+
+        .score-board {
+            color: var(--accent-green);
+        }
+
+        .question-area {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .question-area h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-area input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 1.2rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        .answers-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .answer-pill {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .answer-pill.found {
+            background: rgba(10, 255, 104, 0.2);
+            border-color: var(--accent-green);
+            color: #fff;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Result View */
+        .result-card {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .rank-badge {
+            font-size: 4rem;
+            font-weight: 900;
+            display: inline-block;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .rank-s {
+            color: #FFD700;
+        }
+
+        .rank-a {
+            color: #ff0055;
+        }
+
+        .rank-b {
+            color: #0aff68;
+        }
+
+        .rank-c {
+            color: #00f3ff;
+        }
+
+        .rank-d {
+            color: #a0a0b0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav style="position: absolute; top: 20px; left: 20px; z-index: 100;">
+        <a href="index.html" class="btn">← Top</a>
+    </nav>
+
+    <div class="exam-container">
+
+        <!-- HEADER -->
+        <header class="exam-header">
+            <h3>AREA 4: EXAM</h3>
+            <h1>暗記検定</h1>
+            <p style="color: var(--text-muted);">覚えた知識をアウトプット。<br>制限時間内にどれだけ思い出せるか。</p>
+        </header>
+
+        <!-- VIEW: SELECT THEME -->
+        <div id="view-select" class="view active">
+            <h2 style="margin-bottom: 1.5rem; border-left: 4px solid var(--accent-cyan); padding-left: 1rem;">検定テーマを選択
+            </h2>
+            <div class="theme-grid" id="theme-grid">
+                <!-- Javascript will populate this -->
+            </div>
+        </div>
+
+        <!-- VIEW: PLAY GAME -->
+        <div id="view-play" class="view">
+            <div class="game-ui">
+                <div class="game-info-bar">
+                    <div class="timer" id="timer">60.00</div>
+                    <div class="score-board">Score: <span id="current-score">0</span> / <span id="max-score">0</span>
+                    </div>
+                </div>
+
+                <div class="question-area">
+                    <h2 id="question-title">タイトル</h2>
+                    <p id="question-desc" style="color: var(--text-muted); font-size: 0.9rem;">説明文</p>
+                </div>
+
+                <div class="input-area">
+                    <input type="text" id="answer-input" placeholder="回答を入力してEnter..." autocomplete="off">
+                    <button class="btn btn-primary" id="skip-btn" style="display:none;">パス</button>
+                    <!-- スマホ向けに送信ボタンあってもいいかも -->
+                </div>
+
+                <div class="answers-grid" id="answers-grid">
+                    <!-- Answer pills -->
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn" onclick="endGame()">中断する</button>
+            </div>
+        </div>
+
+        <!-- VIEW: RESULT -->
+        <div id="view-result" class="view">
+            <div class="game-ui result-card">
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">YOUR RESULT</p>
+                <div class="rank-badge" id="result-rank">A</div>
+                <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">
+                    <span id="result-score">0</span> <span style="font-size: 1rem; color: var(--text-muted);">/ <span
+                            id="result-max">0</span></span>
+                </h2>
+
+                <p id="result-message" style="margin-bottom: 2rem;">素晴らしい記憶力です！</p>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-primary" onclick="resetGame()">もう一度</button>
+                    <button class="btn" onclick="showSelect()">他の検定を受ける</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let itemsData = [];
+        let currentItem = null;
+        let correctAnswers = []; // Set of normalized correct answers
+        let foundAnswers = new Set();
+        let timeLeft = 60;
+        let timerInterval = null;
+        let isGameActive = false;
+
+        // Constants
+        const GAME_DURATION = 90; // seconds
+
+        // DOM
+        const viewSelect = document.getElementById('view-select');
+        const viewPlay = document.getElementById('view-play');
+        const viewResult = document.getElementById('view-result');
+        const themeGrid = document.getElementById('theme-grid');
+
+        // Game UI
+        const questionTitle = document.getElementById('question-title');
+        const questionDesc = document.getElementById('question-desc');
+        const timerDisplay = document.getElementById('timer');
+        const currentScoreDisplay = document.getElementById('current-score');
+        const maxScoreDisplay = document.getElementById('max-score');
+        const answerInput = document.getElementById('answer-input');
+        const answersGrid = document.getElementById('answers-grid');
+
+        // Init
+        window.addEventListener('DOMContentLoaded', loadData);
+
+        async function loadData() {
+            try {
+                const res = await fetch('data/cool_items.json');
+                itemsData = await res.json();
+                renderThemeSelect();
+            } catch (e) {
+                console.error("Failed to load data", e);
+                themeGrid.innerHTML = '<p>データの読み込みに失敗しました。</p>';
+            }
+        }
+
+        function renderThemeSelect() {
+            themeGrid.innerHTML = '';
+            itemsData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'theme-card';
+                // カンマ区切りの個数をカウント
+                const count = item.content.split(/,|、|\n/).filter(s => s.trim()).length;
+
+                card.innerHTML = `
+                    <h3>${item.title}</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem; color: #ccc;">${item.description}</p>
+                    <div class="meta">
+                        <span>${item.category.toUpperCase()}</span>
+                        <span>全 ${count} 問</span>
+                    </div>
+                `;
+                card.onclick = () => startGame(item);
+                themeGrid.appendChild(card);
+            });
+        }
+
+        function switchView(viewId) {
+            [viewSelect, viewPlay, viewResult].forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function normalizeString(str) {
+            // カッコと中身を削除し、トリムする
+            // 全角カッコも半角カッコも対応
+            // 例: "アンドロメダ座(Andromeda)" -> "アンドロメダ座"
+            return str.replace(/[\(（][^\)）]+[\)）]/g, "").trim();
+        }
+
+        function startGame(item) {
+            currentItem = item;
+            foundAnswers.clear();
+
+            // Prepare answers
+            // Split by comma, Japanese comma, or newline
+            // Also sanitize: remove empty
+            const rawList = item.content.split(/,|、|\n/).map(s => s.trim()).filter(s => s);
+
+            // Map to object { display: "Original String", normalized: "Normalized" }
+            correctAnswers = rawList.map(s => ({
+                display: s,
+                normalized: normalizeString(s),
+                found: false
+            }));
+
+            // Setup UI
+            questionTitle.textContent = item.title;
+            questionDesc.textContent = item.description;
+            maxScoreDisplay.textContent = correctAnswers.length;
+            currentScoreDisplay.textContent = '0';
+            answerInput.value = '';
+            timeLeft = GAME_DURATION;
+            timerDisplay.textContent = timeLeft.toFixed(2);
+
+            // Render empty pills
+            renderAnswersGrid();
+
+            switchView('view-play');
+
+            // Start Timer
+            isGameActive = true;
+            answerInput.focus();
+
+            if (timerInterval) clearInterval(timerInterval);
+            const startTime = Date.now();
+            timerInterval = setInterval(() => {
+                if (!isGameActive) return;
+
+                const elapsed = (Date.now() - startTime) / 1000;
+                const remaining = Math.max(0, GAME_DURATION - elapsed);
+                timeLeft = remaining;
+                timerDisplay.textContent = remaining.toFixed(2);
+
+                if (remaining <= 0) {
+                    endGame();
+                }
+            }, 50); // High frequency update
+        }
+
+        function renderAnswersGrid() {
+            answersGrid.innerHTML = '';
+            correctAnswers.forEach(ans => {
+                const pill = document.createElement('div');
+                pill.className = `answer-pill ${ans.found ? 'found' : ''}`;
+                // 未発見の場合は？を表示するか、文字数をヒントにするか、何も表示しないか
+                // 多答クイズ形式だと、未発見は隠されていることが多い
+                pill.textContent = ans.found ? ans.display : '???';
+                answersGrid.appendChild(pill);
+            });
+        }
+
+        // Input Handling
+        answerInput.addEventListener('keydown', (e) => {
+            if (!isGameActive) return;
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // Also check on input for instant feedback if desired? 
+        // No, user specifically said "Enter as much as possible like multi-answer quiz" implies typing and submitting.
+        // But instant match is also fun. Let's stick to Enter or instant matching if complete match.
+        // Let's do instant match if it matches exactly.
+        answerInput.addEventListener('input', () => {
+            checkAnswer(false);
+        });
+
+        function checkAnswer(clearOnMatch = true) {
+            const inputVal = normalizeString(answerInput.value);
+            if (!inputVal) return;
+
+            let matched = false;
+
+            correctAnswers.forEach(ans => {
+                if (!ans.found && (ans.normalized === inputVal)) {
+                    ans.found = true;
+                    matched = true;
+                    // Trigger effect
+                }
+            });
+
+            if (matched) {
+                // Update Score
+                foundAnswers.add(inputVal); // Logic redundancy, but ok
+                const currentCount = correctAnswers.filter(a => a.found).length;
+                currentScoreDisplay.textContent = currentCount;
+
+                // Update UI
+                renderAnswersGrid();
+
+                // Clear Input
+                if (clearOnMatch) {
+                    answerInput.value = '';
+                } else {
+                    // If triggered by input event, clear it immediately
+                    answerInput.value = '';
+                }
+
+                // Check Completion
+                if (currentCount === correctAnswers.length) {
+                    endGame();
+                }
+            }
+        }
+
+        function endGame() {
+            isGameActive = false;
+            clearInterval(timerInterval);
+            showResult();
+        }
+
+        function showResult() {
+            const score = correctAnswers.filter(a => a.found).length;
+            const max = correctAnswers.length;
+            const percentage = (score / max) * 100;
+
+            let rank = 'D';
+            let msg = 'まだまだ！これから伸びるよ。';
+            let rankClass = 'rank-d';
+
+            if (percentage === 100) {
+                rank = 'S';
+                msg = '完璧！まさに記憶の達人！';
+                rankClass = 'rank-s';
+            } else if (percentage >= 80) {
+                rank = 'A';
+                msg = '素晴らしい！あと少しでコンプリート。';
+                rankClass = 'rank-a';
+            } else if (percentage >= 50) {
+                rank = 'B';
+                msg = 'いい感じ！楽しんで覚えてるね。';
+                rankClass = 'rank-b';
+            } else if (percentage >= 30) {
+                rank = 'C';
+                msg = 'その調子！繰り返しが力になる。';
+                rankClass = 'rank-c';
+            }
+
+            document.getElementById('result-rank').textContent = rank;
+            document.getElementById('result-rank').className = `rank-badge ${rankClass}`;
+            document.getElementById('result-score').textContent = score;
+            document.getElementById('result-max').textContent = max;
+            document.getElementById('result-message').textContent = msg;
+
+            switchView('view-result');
+        }
+
+        function resetGame() {
+            startGame(currentItem);
+        }
+
+        function showSelect() {
+            switchView('view-select');
+        }
+
+    </script>
+</body>
+
+</html>
