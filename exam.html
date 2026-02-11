@@ -224,6 +224,61 @@
         .rank-d {
             color: #a0a0b0;
         }
+
+        /* Filter Buttons */
+        .filter-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            border-color: var(--accent-cyan);
+            color: #fff;
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        /* Single Mode UI */
+        .single-area {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-family: monospace;
+            font-size: 1.5rem;
+            line-height: 1.5;
+            word-break: break-all;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .single-correct {
+            color: var(--accent-green);
+        }
+
+        .single-cursor {
+            color: var(--accent-pink);
+            border-bottom: 2px solid var(--accent-pink);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.5;
+            }
+        }
     </style>
 </head>
 
@@ -246,6 +301,16 @@
         <div id="view-select" class="view active">
             <h2 style="margin-bottom: 1.5rem; border-left: 4px solid var(--accent-cyan); padding-left: 1rem;">検定テーマを選択
             </h2>
+
+            <!-- Category Filters -->
+            <div class="filters" style="margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="filter-btn active" data-filter="all">すべて</button>
+                <button class="filter-btn" data-filter="space">宇宙・自然</button>
+                <button class="filter-btn" data-filter="history">時間・歴史</button>
+                <button class="filter-btn" data-filter="math">数とことば</button>
+                <button class="filter-btn" data-filter="world">世界・文化</button>
+            </div>
+
             <div class="theme-grid" id="theme-grid">
                 <!-- Javascript will populate this -->
             </div>
@@ -265,10 +330,21 @@
                     <p id="question-desc" style="color: var(--text-muted); font-size: 0.9rem;">説明文</p>
                 </div>
 
-                <div class="input-area">
+                <!-- Multi Mode Input -->
+                <div class="input-area" id="multi-input-area">
                     <input type="text" id="answer-input" placeholder="回答を入力してEnter..." autocomplete="off">
                     <button class="btn btn-primary" id="skip-btn" style="display:none;">パス</button>
-                    <!-- スマホ向けに送信ボタンあってもいいかも -->
+                </div>
+
+                <!-- Single Mode Area -->
+                <div id="single-mode-area" style="display:none;">
+                    <div class="single-area">
+                        <div id="single-display">
+                            <span id="single-correct" class="single-correct"></span><span id="single-cursor"
+                                class="single-cursor">_</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem;">※半角・全角どちらでもOK</p>
+                    </div>
                 </div>
 
                 <div class="answers-grid" id="answers-grid">
@@ -306,8 +382,11 @@
         // State
         let itemsData = [];
         let currentItem = null;
-        let correctAnswers = []; // Set of normalized correct answers
+        let correctAnswers = []; // For Multi Mode
         let foundAnswers = new Set();
+        let targetString = ""; // For Single Mode
+        let currentIndex = 0;  // For Single Mode
+        let gameMode = 'multi'; // 'multi' or 'single'
         let timeLeft = 60;
         let timerInterval = null;
         let isGameActive = false;
@@ -320,6 +399,7 @@
         const viewPlay = document.getElementById('view-play');
         const viewResult = document.getElementById('view-result');
         const themeGrid = document.getElementById('theme-grid');
+        const filterBtns = document.querySelectorAll('.filter-btn');
 
         // Game UI
         const questionTitle = document.getElementById('question-title');
@@ -327,37 +407,65 @@
         const timerDisplay = document.getElementById('timer');
         const currentScoreDisplay = document.getElementById('current-score');
         const maxScoreDisplay = document.getElementById('max-score');
-        const answerInput = document.getElementById('answer-input');
+        const answerInput = document.getElementById('answer-input'); // Main input
+        const multiInputArea = document.getElementById('multi-input-area');
+        const singleModeArea = document.getElementById('single-mode-area');
+        const singleCorrect = document.getElementById('single-correct');
+        const singleCursor = document.getElementById('single-cursor');
         const answersGrid = document.getElementById('answers-grid');
 
         // Init
         window.addEventListener('DOMContentLoaded', loadData);
 
+        // Filter Handlers
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderThemeSelect(btn.dataset.filter);
+            });
+        });
+
         async function loadData() {
             try {
                 const res = await fetch('data/cool_items.json');
                 itemsData = await res.json();
-                renderThemeSelect();
+                renderThemeSelect('all');
             } catch (e) {
                 console.error("Failed to load data", e);
                 themeGrid.innerHTML = '<p>データの読み込みに失敗しました。</p>';
             }
         }
 
-        function renderThemeSelect() {
+        function renderThemeSelect(filter) {
             themeGrid.innerHTML = '';
-            itemsData.forEach(item => {
+
+            const filtered = filter === 'all'
+                ? itemsData
+                : itemsData.filter(item => {
+                    if (filter === 'world') return item.category === 'world' || item.category === 'culture';
+                    return item.category === filter;
+                });
+
+            if (filtered.length === 0) {
+                themeGrid.innerHTML = '<p style="color:var(--text-muted)">該当する検定はありません</p>';
+                return;
+            }
+
+            filtered.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'theme-card';
-                // カンマ区切りの個数をカウント
-                const count = item.content.split(/,|、|\n/).filter(s => s.trim()).length;
+
+                // Determine Mode
+                const parts = item.content.split(/,|、|\n/).filter(s => s.trim());
+                const isSingle = parts.length === 1 && !item.content.includes(',') && !item.content.includes('、');
 
                 card.innerHTML = `
                     <h3>${item.title}</h3>
                     <p style="font-size: 0.9rem; margin-bottom: 1rem; color: #ccc;">${item.description}</p>
                     <div class="meta">
                         <span>${item.category.toUpperCase()}</span>
-                        <span>全 ${count} 問</span>
+                        <span>${isSingle ? '長文チャレンジ' : `全 ${parts.length} 問`}</span>
                     </div>
                 `;
                 card.onclick = () => startGame(item);
@@ -371,9 +479,6 @@
         }
 
         function normalizeString(str) {
-            // カッコと中身を削除し、トリムする
-            // 全角カッコも半角カッコも対応
-            // 例: "アンドロメダ座(Andromeda)" -> "アンドロメダ座"
             return str.replace(/[\(（][^\)）]+[\)）]/g, "").trim();
         }
 
@@ -381,33 +486,65 @@
             currentItem = item;
             foundAnswers.clear();
 
-            // Prepare answers
-            // Split by comma, Japanese comma, or newline
-            // Also sanitize: remove empty
-            const rawList = item.content.split(/,|、|\n/).map(s => s.trim()).filter(s => s);
+            // Determine Mode
+            const parts = item.content.split(/,|、|\n/).map(s => s.trim()).filter(s => s);
+            const isSingle = parts.length === 1 && !item.content.includes(',') && !item.content.includes('、');
+            gameMode = isSingle ? 'single' : 'multi';
 
-            // Map to object { display: "Original String", normalized: "Normalized" }
-            correctAnswers = rawList.map(s => ({
-                display: s,
-                normalized: normalizeString(s),
-                found: false
-            }));
+            // Setup Data
+            if (gameMode === 'multi') {
+                correctAnswers = parts.map(s => ({
+                    display: s,
+                    normalized: normalizeString(s),
+                    found: false
+                }));
+                maxScoreDisplay.textContent = correctAnswers.length;
+            } else {
+                // Single Mode: Prepare target string. Remove whitespace for matching if it's purely digits/alpha?
+                // For 'world capitals', spaces might be important.
+                // For 'Pi', spaces are just separators.
+                // Let's try to infer: if it has digits, remove spaces. If text?
+                // User said "Pi etc". 
+                // Let's remove ALL whitespace for now to key matching simple.
+                targetString = item.content.replace(/\s+/g, '');
+                currentIndex = 0;
+                maxScoreDisplay.textContent = targetString.length;
 
-            // Setup UI
-            questionTitle.textContent = item.title;
-            questionDesc.textContent = item.description;
-            maxScoreDisplay.textContent = correctAnswers.length;
+                // Reset Single UI
+                singleCorrect.textContent = "";
+                singleCursor.textContent = "_";
+            }
+
             currentScoreDisplay.textContent = '0';
             answerInput.value = '';
             timeLeft = GAME_DURATION;
             timerDisplay.textContent = timeLeft.toFixed(2);
 
-            // Render empty pills
-            renderAnswersGrid();
+            // Toggle UI Areas
+            if (gameMode === 'multi') {
+                multiInputArea.style.display = 'flex';
+                answersGrid.style.display = 'flex';
+                singleModeArea.style.display = 'none';
+                renderAnswersGrid();
+            } else {
+                multiInputArea.style.display = 'flex'; // Use hidden input or visible input
+                // User asked for 1 char at a time.
+                // Hiding the input might be better UX if we show the stream.
+                // But we need focus.
+                // Let's make it opacity 0 absolute positioned?
+                // For now, let's keep it visible but placeholder says "Type here".
+                answersGrid.style.display = 'none';
+                singleModeArea.style.display = 'block';
+                answerInput.placeholder = "ここに入力（1文字ずつ判定）";
+            }
+
+            // UI Setup
+            questionTitle.textContent = item.title;
+            questionDesc.textContent = item.description;
 
             switchView('view-play');
 
-            // Start Timer
+            // Start
             isGameActive = true;
             answerInput.focus();
 
@@ -424,7 +561,7 @@
                 if (remaining <= 0) {
                     endGame();
                 }
-            }, 50); // High frequency update
+            }, 50);
         }
 
         function renderAnswersGrid() {
@@ -432,8 +569,6 @@
             correctAnswers.forEach(ans => {
                 const pill = document.createElement('div');
                 pill.className = `answer-pill ${ans.found ? 'found' : ''}`;
-                // 未発見の場合は？を表示するか、文字数をヒントにするか、何も表示しないか
-                // 多答クイズ形式だと、未発見は隠されていることが多い
                 pill.textContent = ans.found ? ans.display : '???';
                 answersGrid.appendChild(pill);
             });
@@ -443,54 +578,82 @@
         answerInput.addEventListener('keydown', (e) => {
             if (!isGameActive) return;
             if (e.key === 'Enter') {
-                checkAnswer();
+                if (gameMode === 'multi') checkMultiAnswer();
             }
         });
 
-        // Also check on input for instant feedback if desired? 
-        // No, user specifically said "Enter as much as possible like multi-answer quiz" implies typing and submitting.
-        // But instant match is also fun. Let's stick to Enter or instant matching if complete match.
-        // Let's do instant match if it matches exactly.
-        answerInput.addEventListener('input', () => {
-            checkAnswer(false);
+        answerInput.addEventListener('input', (e) => {
+            if (!isGameActive) return;
+
+            if (gameMode === 'multi') {
+                checkMultiAnswer(false);
+            } else {
+                checkSingleInput(e);
+            }
         });
 
-        function checkAnswer(clearOnMatch = true) {
+        function checkMultiAnswer(clearOnMatch = true) {
             const inputVal = normalizeString(answerInput.value);
             if (!inputVal) return;
 
             let matched = false;
-
             correctAnswers.forEach(ans => {
                 if (!ans.found && (ans.normalized === inputVal)) {
                     ans.found = true;
                     matched = true;
-                    // Trigger effect
                 }
             });
 
             if (matched) {
-                // Update Score
-                foundAnswers.add(inputVal); // Logic redundancy, but ok
+                foundAnswers.add(inputVal);
                 const currentCount = correctAnswers.filter(a => a.found).length;
                 currentScoreDisplay.textContent = currentCount;
-
-                // Update UI
                 renderAnswersGrid();
 
-                // Clear Input
-                if (clearOnMatch) {
-                    answerInput.value = '';
-                } else {
-                    // If triggered by input event, clear it immediately
+                if (clearOnMatch || true) {
                     answerInput.value = '';
                 }
 
-                // Check Completion
-                if (currentCount === correctAnswers.length) {
+                if (currentCount === correctAnswers.length) endGame();
+            }
+        }
+
+        function checkSingleInput(e) {
+            const val = answerInput.value;
+            if (val.length === 0) return;
+
+            // Get last char
+            const char = val.slice(-1);
+
+            const expected = targetString[currentIndex];
+
+            if (isMatch(char, expected)) {
+                // Correct!
+                currentIndex++;
+                singleCorrect.textContent = targetString.slice(0, currentIndex);
+                currentScoreDisplay.textContent = currentIndex;
+
+                answerInput.value = '';
+
+                if (currentIndex >= targetString.length) {
                     endGame();
                 }
+            } else {
+                // Wrong
+                singleCursor.style.color = 'red';
+                setTimeout(() => singleCursor.style.color = 'var(--accent-pink)', 200);
+                answerInput.value = '';
             }
+        }
+
+        function isMatch(input, target) {
+            if (input === target) return true;
+            // Fullwidth check
+            const full = input.replace(/[A-Za-z0-9]/g, function (s) {
+                return String.fromCharCode(s.charCodeAt(0) + 0xFEE0);
+            });
+            if (full === target) return true;
+            return false;
         }
 
         function endGame() {
@@ -500,9 +663,16 @@
         }
 
         function showResult() {
-            const score = correctAnswers.filter(a => a.found).length;
-            const max = correctAnswers.length;
-            const percentage = (score / max) * 100;
+            let score, max, percentage;
+
+            if (gameMode === 'multi') {
+                score = correctAnswers.filter(a => a.found).length;
+                max = correctAnswers.length;
+            } else {
+                score = currentIndex;
+                max = targetString.length;
+            }
+            percentage = (score / max) * 100;
 
             let rank = 'D';
             let msg = 'まだまだ！これから伸びるよ。';
