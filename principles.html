@@ -333,6 +333,21 @@
                 padding: 1.5rem;
             }
         }
+
+        .paper-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--accent-brain);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent-brain);
+            padding-bottom: 2px;
+            transition: all 0.2s;
+        }
+
+        .paper-link:hover {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
     </style>
 </head>
 
@@ -440,7 +455,8 @@
                 <li>Roediger & Karpicke (2006). Test-enhanced learning: Taking memory tests improves long-term
                     retention. <i>Psychological Science</i>.</li>
                 <li>Dunlosky et al. (2013). Improving Students’ Learning With Effective Learning Techniques.
-                    <i>Psychological Science in the Public Interest</i>.</li>
+                    <i>Psychological Science in the Public Interest</i>.
+                </li>
                 <li>Diekelmann & Born (2010). The memory function of sleep. <i>Nature Reviews Neuroscience</i>.</li>
                 <li>Symons & Johnson (1997). The self-reference effect in memory: a meta-analysis. <i>Psychological
                         Bulletin</i>.</li>
@@ -477,7 +493,9 @@
                 summary: "一夜漬けよりも、時間を空けて繰り返す方が圧倒的に記憶に残る。",
                 desc: "学習内容を時間的に分散させて繰り返すこと。317の研究を分析したメタ解析で、分散学習は集中学習（一夜漬け等）よりも記憶を大幅に向上させることが証明されています。",
                 evidence: "High",
-                paper: "Cepeda et al. 2006 (Psychol Bull)"
+                paper: "Cepeda et al. 2006 (Psychol Bull)",
+                paperSummary: "317件の研究を対象としたメタ分析。分散再学習は、集中的な再学習と比較して、長期的な記憶保持を大幅に向上させることが示された。",
+                url: "https://doi.org/10.1037/0033-2909.132.3.354"
             },
             {
                 title: "想起（テスト効果）",
@@ -486,7 +504,9 @@
                 summary: "テキストを再読するより、自分自身でテストをすると記憶が強化される。",
                 desc: "学習後に意図的に思い出す（テストする）ことで記憶が強化されます。「入力」より「出力」のプロセスが脳回路を強くします。",
                 evidence: "High",
-                paper: "Roediger & Karpicke 2006 (Psych Sci)"
+                paper: "Roediger & Karpicke 2006 (Psych Sci)",
+                paperSummary: "学生を対象とした実験で、学習後に「テスト」を行ったグループは、「再読」したグループよりも1週間後の記憶定着率が有意に高かった。",
+                url: "https://doi.org/10.1111/j.1467-9280.2006.01693.x"
             },
             {
                 title: "連想（二重符号化）",
@@ -495,7 +515,9 @@
                 summary: "言葉だけでなく、イメージや図をセットで覚えると忘れにくい。",
                 desc: "言語情報と視覚情報を関連付けて記憶することで、思い出す手がかりが2倍になります（Paivioの二重符号化理論）。",
                 evidence: "Med-High",
-                paper: "Paivio 1971"
+                paper: "Paivio 1971",
+                paperSummary: "言語システムと非言語（視覚）システムは独立しており、両方を同時に活性化させることで記憶の痕跡がより強固になるとする理論。",
+                url: "https://scholar.google.com/scholar?q=Paivio+1971+Dual+coding"
             },
             {
                 title: "構造化・抽象化",
@@ -504,7 +526,9 @@
                 summary: "バラバラの知識を体系化・要約すると脳に格納しやすい。",
                 desc: "情報を意味的に整理・縮約すること（マインドマップ、要約など）。情報を組織化して記憶すると、そうでない場合より想起が増加します。",
                 evidence: "Medium",
-                paper: "Bower 1970"
+                paper: "Bower 1970",
+                paperSummary: "提示された単語リストを階層的に組織化して学習した被験者は、ランダムに学習した被験者よりもはるかに多くの単語を再生できた。",
+                url: "https://scholar.google.com/scholar?q=Bower+1970+Cognitive+Psychology"
             },
             {
                 title: "感情付与",
@@ -513,7 +537,9 @@
                 summary: "ワクワクやドキドキなど、感情が動いた出来事は鮮明に記憶される。",
                 desc: "情動的に意味のある素材は、扁桃体-海馬系の連携で優先的に記憶されます。扁桃体が「これは重要だ！」とタグ付けをするためです。",
                 evidence: "High",
-                paper: "Cahill & McGaugh 1998"
+                paper: "Cahill & McGaugh 1998",
+                paperSummary: "扁桃体がストレスホルモンと相互作用し、情動的な出来事の記憶固定（コンソリデーション）を促進するメカニズムを解説。",
+                url: "https://doi.org/10.1016/S0166-2236(97)01214-9"
             },
             {
                 title: "身体化",
@@ -522,7 +548,9 @@
                 summary: "身振り手振りを交えたり、リズムに乗ったりすると覚えやすい。",
                 desc: "身体運動や動作と学習内容を結びつけることで記憶が強化されます。ジェスチャーを使いながら説明すると理解も深まります。",
                 evidence: "Medium",
-                paper: "Goldin-Meadow et al. 2001"
+                paper: "Goldin-Meadow et al. 2001",
+                paperSummary: "説明時にジェスチャーを行うことを許可された子どもは、言葉だけで説明した子どもよりも、その後の学習課題で優れた成績を収めた。",
+                url: "https://doi.org/10.1111/1467-8624.00313"
             },
             {
                 title: "社会化（教え効果）",
@@ -531,7 +559,9 @@
                 summary: "誰かに教えるつもりで学ぶと、自分の理解度が格段に上がる。",
                 desc: "他者への説明（教える行為）を通じて自分の記憶が強化される「教授学習効果」。教える準備をするだけでも効果があります。",
                 evidence: "Medium",
-                paper: "Fiorella & Mayer 2013"
+                paper: "Fiorella & Mayer 2013",
+                paperSummary: "「後で他者に教える」と期待して学習した学生は、単にテストのために学習した学生よりも、理解度テストで高い成績を示した。",
+                url: "https://doi.org/10.1111/cogs.12023"
             },
             {
                 title: "意味付け",
@@ -540,7 +570,9 @@
                 summary: "新しい知識を、既に知っていることや自分の目標に関連付ける。",
                 desc: "丸暗記ではなく、既存の知識ネットワークに接続すること（有意味学習）。「なぜ自分にとって重要か？」を考えると定着します。",
                 evidence: "Medium",
-                paper: "McCabe & Castel 2010"
+                paper: "McCabe & Castel 2010",
+                paperSummary: "情報と自分自身の将来との関連性を考えること（将来の自己への手紙など）が、単なる意味処理以上に記憶を促進することを示唆。",
+                url: "https://doi.org/10.1037/a0019265"
             },
             {
                 title: "文脈・状態依存",
@@ -549,7 +581,9 @@
                 summary: "覚えたときと同じ場所・同じ気分のとき、記憶は蘇りやすい。",
                 desc: "学習時の環境・身体・気分を再現すると想起が促進されます（環境依存学習）。本番と同じ環境で練習するのが効果的です。",
                 evidence: "High",
-                paper: "Godden & Baddeley 1975"
+                paper: "Godden & Baddeley 1975",
+                paperSummary: "ダイバーを用いた有名な実験。海中で覚えた単語は海中で、陸上で覚えた単語は陸上で思い出す方が成績が良かった。",
+                url: "https://doi.org/10.1038/257556a0"
             },
             {
                 title: "分散化と省略（要点化）",
@@ -558,7 +592,9 @@
                 summary: "情報を小さな塊（チャンク）に分け、要点だけを抽出する。",
                 desc: "膨大な情報をそのまま覚えるのは不可能ですが、グループ化（チャンキング）して要約することで脳の容量を節約できます。",
                 evidence: "Medium",
-                paper: "Hunt & Einstein 1981"
+                paper: "Hunt & Einstein 1981",
+                paperSummary: "情報を整理・分類（関係処理）することと、個々の詳細を際立たせること（個別処理）の両方が記憶には重要であるとの知見。",
+                url: "https://doi.org/10.1016/S0022-5371(81)90479-7"
             },
             {
                 title: "休息と統合",
@@ -567,7 +603,9 @@
                 summary: "寝ている間に脳は記憶を整理する。睡眠不足は記憶の敵。",
                 desc: "学習後の睡眠により記憶が固定・整理されます（コンソリデーション）。徹夜学習より睡眠をとった方が記憶成績は良くなります。",
                 evidence: "High",
-                paper: "Diekelmann & Born 2010"
+                paper: "Diekelmann & Born 2010",
+                paperSummary: "睡眠中に海馬に一時保存された記憶情報が大脳皮質へと転送され、長期記憶として固定化されるメカニズムを詳述したレビュー。",
+                url: "https://doi.org/10.1038/nrn2762"
             },
             {
                 title: "差異化・対比",
@@ -576,7 +614,9 @@
                 summary: "周りと違う異質なものは目立つので覚えやすい。",
                 desc: "周囲と異なる情報は記憶されやすい（von Restorff効果）。重要な部分を赤字にする、変な絵を描くなどがこれに当たります。",
                 evidence: "Medium",
-                paper: "von Restorff 1933"
+                paper: "von Restorff 1933",
+                paperSummary: "均質なリストの中に一つだけ異質な項目（色違いや別カテゴリ）を混ぜると、その項目の記憶成績が突出して良くなる現象。",
+                url: "https://scholar.google.com/scholar?q=von+Restorff+1933"
             },
             {
                 title: "生成効果",
@@ -585,7 +625,9 @@
                 summary: "答えを見る前に、自分で一度考えて答えを作る。",
                 desc: "自分で問題・答えを作成したり、穴埋め問題を解いたりすると記憶が深まります。受動的に読むより能動的に生み出すことが鍵です。",
                 evidence: "Medium",
-                paper: "Slamecka & Graf 1978"
+                paper: "Slamecka & Graf 1978",
+                paperSummary: "単語を単に「読む」よりも、文脈から判断して自ら「生成」した方が、後のテストでの再認・再生率が高かった。",
+                url: "https://doi.org/10.1016/S0022-5371(78)90393-6"
             },
             {
                 title: "誤答利用・予測エラー",
@@ -594,7 +636,9 @@
                 summary: "間違えることは悪いことじゃない。間違いこそが記憶を強くする。",
                 desc: "予測と結果の不一致（予測誤差）が学習を促進します。自信満々で間違えた後に修正すると、強く記憶に残ります（Hypercorrection効果）。",
                 evidence: "Medium",
-                paper: "Metcalfe 2017"
+                paper: "Metcalfe 2017",
+                paperSummary: "誤りを犯すことは学習の妨げではなく、フィードバックがあればむしろ強力な学習機会となる。特に強い確信を持って間違えたとき修正効果が高い。",
+                url: "https://doi.org/10.1146/annurev-psych-010416-044022"
             },
             {
                 title: "自己関連",
@@ -603,7 +647,9 @@
                 summary: "「自分に関係あること」だと脳に認識させると最強の記憶になる。",
                 desc: "情報を自己や未来の自己に関係づけること。Symonsのメタ分析では「自己関連情報は最強の記憶促進効果」とされています。",
                 evidence: "High",
-                paper: "Symons & Johnson 1997"
+                paper: "Symons & Johnson 1997",
+                paperSummary: "自己に関連付けて処理された情報は、意味的処理や他の処理条件と比較して、最も優れた記憶成績をもたらすことをメタ分析で確認。",
+                url: "https://doi.org/10.1037/0033-2909.121.3.371"
             },
             {
                 title: "物語性・一貫性",
@@ -612,7 +658,9 @@
                 summary: "断片的な情報も、ストーリー仕立てにすると頭に入ってくる。",
                 desc: "情報を物語として連続的に構成すると記憶がよくなります。歴史の年号も、因果関係のドラマとして捉えると容易に覚えられます。",
                 evidence: "Low-Med",
-                paper: "Bruner 1991"
+                paper: "Bruner 1991",
+                paperSummary: "人間は経験を「物語」として構築することで意味を見出す。物語構造は記憶の組織化と想起を助ける強力なツールである。",
+                url: "https://scholar.google.com/scholar?q=Bruner+1991+Narrative"
             },
             {
                 title: "具体性",
@@ -621,7 +669,9 @@
                 summary: "抽象的な概念より、具体的なイメージが湧くものの方が覚えやすい。",
                 desc: "「真実」より「リンゴ」の方が覚えやすいように、具体語はイメージしやすいため保持されやすいです。",
                 evidence: "Medium",
-                paper: "Schwanenflugel & Shoben 1985"
+                paper: "Schwanenflugel & Shoben 1985",
+                paperSummary: "具体語は抽象語よりも文脈情報を利用しやすく、イメージ化もしやすいため、理解と記憶が容易になる。",
+                url: "https://doi.org/10.1016/0749-596X(85)90041-5"
             },
             {
                 title: "希少性・限定性",
@@ -630,7 +680,9 @@
                 summary: "「これだけ」「今だけ」という限定感は集中を高める。",
                 desc: "希少な情報や限定された状況で学ぶと、価値が高まり記憶に残りやすくなります。マーケティングの応用ですが学習にも有効です。",
                 evidence: "Low",
-                paper: "Marketing / Behavioral Econ"
+                paper: "Marketing / Behavioral Econ",
+                paperSummary: "希少性の原理（Cialdini等）。入手困難なものは価値が高いと判断され、注意リソースが多く配分される傾向がある。",
+                url: "https://scholar.google.com/scholar?q=Cialdini+Scarcity+Principle"
             },
             {
                 title: "注意集中",
@@ -639,7 +691,9 @@
                 summary: "マルチタスクは記憶の敵。一点集中が質を決める。",
                 desc: "学習時の注意集中度が記憶の質を決めます。音楽を聴きながら（歌詞あり）やスマホを見ながらの学習は効率を著しく下げます。",
                 evidence: "Med-High",
-                paper: "Craik et al. 1996"
+                paper: "Craik et al. 1996",
+                paperSummary: "学習時に注意を分断させる課題（マルチタスク）を与えられると、記憶成績が著しく低下することを示した実験。",
+                url: "https://doi.org/10.1006/jmla.1996.0017"
             },
             {
                 title: "多感覚化",
@@ -648,7 +702,9 @@
                 summary: "目、耳、手、口。五感をフル活用して脳を刺激する。",
                 desc: "視覚・聴覚・触覚等、複数感覚を同時活用して情報を符号化します。単一の入力よりも多くの脳領域を使うため定着しやすくなります。",
                 evidence: "Med-High",
-                paper: "Mayer 2009"
+                paper: "Mayer 2009",
+                paperSummary: "Multimedia Learning理論。言葉（聴覚/視覚）と絵（視覚）を適切に組み合わせることで、単一モードよりも深い学習が可能になる。",
+                url: "https://scholar.google.com/scholar?q=Mayer+Multimedia+Learning"
             }
         ];
 
@@ -682,6 +738,9 @@
 
         // Modal Functions
         function openModal(item) {
+            // Link HTML
+            const linkHtml = item.url ? `<a href="${item.url}" target="_blank" class="paper-link">論文を読む (外部サイト) <span style="font-size: 0.8em">↗</span></a>` : '';
+
             modalBody.innerHTML = `
                 <div class="modal-header">
                     <span class="modal-icon">${item.icon}</span>
@@ -696,7 +755,11 @@
                     <p>${item.summary}</p>
                     
                     <h4>📚 代表的エビデンス</h4>
-                    <div class="paper-ref">${item.paper}</div>
+                    <div class="paper-ref">
+                        <strong>${item.paper}</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9em; color: var(--text-muted);">${item.paperSummary || ''}</p>
+                        ${linkHtml}
+                    </div>
                 </div>
             `;
             modalOverlay.classList.add('active');
