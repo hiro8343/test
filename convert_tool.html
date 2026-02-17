@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CSV to JSON Converter</title>
+</head>
+
+<body>
+    <pre id="json">Converting...</pre>
+    <script>
+        // Check local file or fallback to URL
+        // Since we downloaded temp_cool.csv, let's try to fetch it relative, 
+        // but browser might block file:// fetch.
+        // So we use the URL directly.
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/1IN-PC0r_y6WHSQs1-Xklakj72LYm43q6xUspQ0KueXE/export?format=csv&gid=1782876609';
+
+        const CATEGORY_MAP = {
+            '言語': 'math',
+            '数学': 'math',
+            '歴史': 'history',
+            '地理': 'world',
+            '公民': 'world',
+            '理科': 'space',
+            '生物': 'space',
+            '地学': 'space',
+            '宇宙': 'space',
+            '雑学': 'culture',
+            '文化': 'culture'
+        };
+
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/);
+            const items = [];
+            // Header: カテゴリー,タイトル,解説,内容,種類,文字数,ファクトチェック,チェック用URL
+            // We assume line 0 is header.
+
+            // Simple parsing to handle quotes? 
+            // The content field has quotes and newlines. 
+            // We need a proper CSV parser.
+
+            // Minimal CSV parser that handles quoted strings with newlines
+            const rows = [];
+            let row = [];
+            let inQuote = false;
+            let currentToken = '';
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+
+                if (inQuote) {
+                    if (char === '"' && nextChar === '"') {
+                        currentToken += '"';
+                        i++;
+                    } else if (char === '"') {
+                        inQuote = false;
+                    } else {
+                        currentToken += char;
+                    }
+                } else {
+                    if (char === '"') {
+                        inQuote = true;
+                    } else if (char === ',') {
+                        row.push(currentToken);
+                        currentToken = '';
+                    } else if (char === '\r' || char === '\n') {
+                        if (char === '\r' && nextChar === '\n') i++;
+                        row.push(currentToken);
+                        rows.push(row);
+                        row = [];
+                        currentToken = '';
+                    } else {
+                        currentToken += char;
+                    }
+                }
+            }
+            if (currentToken || row.length > 0) {
+                row.push(currentToken);
+                rows.push(row);
+            }
+
+            // Skip header (row 0)
+            for (let i = 1; i < rows.length; i++) {
+                const r = rows[i];
+                if (r.length < 2) continue; // Skip empty rows
+
+                // Column indices based on visual inspection of CSV content
+                // 0: Category, 1: Title, 2: Description, 3: Content, 4: Kind, 5: Len, 6: Check, 7: URL
+                const catJp = r[0] ? r[0].trim() : '';
+                const title = r[1] ? r[1].trim() : '';
+                const desc = r[2] ? r[2].trim() : '';
+                const content = r[3] ? r[3].trim() : '';
+                const url = r[7] ? r[7].trim() : '';
+
+                if (!title) continue;
+
+                const catKey = CATEGORY_MAP[catJp] || 'culture';
+
+                items.push({
+                    id: i,
+                    category: catKey,
+                    title: title,
+                    description: description = desc,
+                    content: content,
+                    stars: 3,
+                    explanationUrl: url,
+                    wordUrl: url
+                });
+            }
+            return items;
+        }
+
+        fetch(CSV_URL)
+            .then(r => r.text())
+            .then(text => {
+                const data = parseCSV(text);
+                document.getElementById('json').textContent = JSON.stringify(data, null, 4);
+            })
+            .catch(e => {
+                document.getElementById('json').textContent = 'Error: ' + e;
+            });
+    </script>
+</body>
+
+</html>
