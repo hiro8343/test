@@ -372,6 +372,10 @@
 
                 <p id="result-message" style="margin-bottom: 2rem;">素晴らしい記憶力です！</p>
 
+                <div id="result-details" style="margin-bottom: 2rem; width: 100%;">
+                    <!-- Details will be injected here -->
+                </div>
+
                 <div style="display: flex; gap: 1rem; justify-content: center;">
                     <button class="btn btn-primary" onclick="resetGame()">もう一度</button>
                     <button class="btn" onclick="showSelect()">他の検定を受ける</button>
@@ -708,6 +712,52 @@
             document.getElementById('result-score').textContent = score;
             document.getElementById('result-max').textContent = max;
             document.getElementById('result-message').textContent = msg;
+
+            document.getElementById('result-message').textContent = msg;
+
+            // Render Details
+            const detailsContainer = document.getElementById('result-details');
+            detailsContainer.innerHTML = '';
+
+            if (gameMode === 'multi') {
+                const grid = document.createElement('div');
+                grid.className = 'answers-grid';
+                grid.style.justifyContent = 'center';
+
+                correctAnswers.forEach(ans => {
+                    const pill = document.createElement('div');
+                    pill.className = `answer-pill ${ans.found ? 'found' : ''}`;
+                    // For result, show the actual answer. If not found, maybe style differently or just show it normal?
+                    // User asked to see "what I got right and the actual correct answer".
+                    // Let's show all. Found ones are green/highlighted. Missed ones are normal/grey.
+                    pill.textContent = ans.display;
+                    if (!ans.found) {
+                        pill.style.opacity = '0.7';
+                        pill.style.border = '1px dashed var(--text-muted)';
+                    }
+                    grid.appendChild(pill);
+                });
+                detailsContainer.appendChild(grid);
+            } else {
+                // Single Mode
+                const container = document.createElement('div');
+                container.style.textAlign = 'left';
+                container.style.background = 'rgba(0,0,0,0.3)';
+                container.style.padding = '1.5rem';
+                container.style.borderRadius = 'var(--radius-md)';
+                container.style.fontFamily = 'monospace';
+                container.style.fontSize = '1.2rem';
+                container.style.lineHeight = '1.6';
+                container.style.wordBreak = 'break-all';
+
+                const correctPart = targetString.slice(0, currentIndex);
+                const remainingPart = targetString.slice(currentIndex);
+
+                container.innerHTML = `
+                    <span style="color: var(--accent-green); font-weight:bold;">${correctPart}</span><span style="color: var(--text-muted);">${remainingPart}</span>
+                `;
+                detailsContainer.appendChild(container);
+            }
 
             switchView('view-result');
         }
