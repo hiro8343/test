@@ -354,8 +354,9 @@
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 2rem;">
-                <button class="btn" onclick="endGame()">中断する</button>
+            <div style="text-align: center; margin-top: 2rem; display:flex; gap:1rem; justify-content:center;">
+                <button class="btn btn-primary" onclick="finishGame()">採点して終了</button>
+                <button class="btn" onclick="abortGame()">中断して戻る</button>
             </div>
         </div>
 
@@ -388,13 +389,9 @@
         let foundAnswers = new Set();
         let targetString = ""; // For Single Mode
         let currentIndex = 0;  // For Single Mode
-        let gameMode = 'multi'; // 'multi' or 'single'
-        let timeLeft = 60;
+        let elapsedTime = 0;
         let timerInterval = null;
         let isGameActive = false;
-
-        // Constants
-        const GAME_DURATION = 90; // seconds
 
         // DOM
         const viewSelect = document.getElementById('view-select');
@@ -501,16 +498,17 @@
                     found: false
                 }));
                 maxScoreDisplay.textContent = correctAnswers.length;
+
+                // Set Placeholder Highlight
+                answerInput.placeholder = `例: ${correctAnswers[0].display}`;
+
             } else {
-                // Single Mode: Prepare target string. Remove whitespace for matching if it's purely digits/alpha?
-                // For 'world capitals', spaces might be important.
-                // For 'Pi', spaces are just separators.
-                // Let's try to infer: if it has digits, remove spaces. If text?
-                // User said "Pi etc". 
-                // Let's remove ALL whitespace for now to key matching simple.
                 targetString = item.content.replace(/\s+/g, '');
                 currentIndex = 0;
                 maxScoreDisplay.textContent = targetString.length;
+
+                // Set Placeholder Highlight
+                answerInput.placeholder = `例: ${targetString.slice(0, 5)}...`;
 
                 // Reset Single UI
                 singleCorrect.textContent = "";
@@ -519,8 +517,8 @@
 
             currentScoreDisplay.textContent = '0';
             answerInput.value = '';
-            timeLeft = GAME_DURATION;
-            timerDisplay.textContent = timeLeft.toFixed(2);
+            elapsedTime = 0;
+            timerDisplay.textContent = "0.00";
 
             // Toggle UI Areas
             if (gameMode === 'multi') {
@@ -529,15 +527,9 @@
                 singleModeArea.style.display = 'none';
                 renderAnswersGrid();
             } else {
-                multiInputArea.style.display = 'flex'; // Use hidden input or visible input
-                // User asked for 1 char at a time.
-                // Hiding the input might be better UX if we show the stream.
-                // But we need focus.
-                // Let's make it opacity 0 absolute positioned?
-                // For now, let's keep it visible but placeholder says "Type here".
+                multiInputArea.style.display = 'flex';
                 answersGrid.style.display = 'none';
                 singleModeArea.style.display = 'block';
-                answerInput.placeholder = "ここに入力（1文字ずつ判定）";
             }
 
             // UI Setup
@@ -555,14 +547,9 @@
             timerInterval = setInterval(() => {
                 if (!isGameActive) return;
 
-                const elapsed = (Date.now() - startTime) / 1000;
-                const remaining = Math.max(0, GAME_DURATION - elapsed);
-                timeLeft = remaining;
-                timerDisplay.textContent = remaining.toFixed(2);
-
-                if (remaining <= 0) {
-                    endGame();
-                }
+                const thisElapsed = (Date.now() - startTime) / 1000;
+                elapsedTime = thisElapsed;
+                timerDisplay.textContent = thisElapsed.toFixed(2);
             }, 50);
         }
 
@@ -616,7 +603,7 @@
                     answerInput.value = '';
                 }
 
-                if (currentCount === correctAnswers.length) endGame();
+                if (currentCount === correctAnswers.length) finishGame();
             }
         }
 
@@ -638,7 +625,7 @@
                 answerInput.value = '';
 
                 if (currentIndex >= targetString.length) {
-                    endGame();
+                    finishGame();
                 }
             } else {
                 // Wrong
@@ -658,10 +645,28 @@
             return false;
         }
 
-        function endGame() {
+        // Called when user clicks "Finish" or completes all items
+        function finishGame() {
+            endGame(true);
+        }
+
+        // Called when user clicks "Abort"
+        function abortGame() {
+            if (confirm('本当に中断しますか？記録は残りません。')) {
+                isGameActive = false;
+                clearInterval(timerInterval);
+                showSelect();
+            }
+        }
+
+        function endGame(showScore = false) {
             isGameActive = false;
             clearInterval(timerInterval);
-            showResult();
+            if (showScore) {
+                showResult();
+            } else {
+                showSelect();
+            }
         }
 
         function showResult() {
