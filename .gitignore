@@ -1,0 +1,9 @@
+
+temp_*.csv
+*.csv
+__pycache__/
+*.pyc
+100
+200
+40
+data/cool_items_raw.json
