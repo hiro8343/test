@@ -159,13 +159,62 @@
             box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
         }
 
+        /* Scrollable Grid */
         .answers-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 0.8rem;
-            max-height: 300px;
+            max-height: 40vh;
+            /* Limit height */
             overflow-y: auto;
+            /* Scrollable */
             padding-right: 0.5rem;
+            scroll-behavior: smooth;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            /* Subtle border */
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        .answers-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .answers-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .answers-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-cyan);
+            border-radius: 4px;
+        }
+
+        /* Feedback Popup */
+        .feedback-popup {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-green);
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            white-space: nowrap;
+            box-shadow: 0 0 15px var(--accent-green);
+        }
+
+        .feedback-popup.show {
+            top: -60px;
+            opacity: 1;
         }
 
         .answer-pill {
@@ -342,8 +391,10 @@
                 </div>
 
                 <!-- Multi Mode Input -->
-                <div class="input-area" id="multi-input-area">
+                <div class="input-area" id="multi-input-area" style="position: relative;">
                     <input type="text" id="answer-input" placeholder="回答を入力してEnter..." autocomplete="off">
+                    <!-- Feedback Element -->
+                    <div id="feedback-msg" class="feedback-popup">Nice!</div>
                     <button class="btn btn-primary" id="skip-btn" style="display:none;">パス</button>
                 </div>
 
@@ -425,6 +476,7 @@
         const singleCorrect = document.getElementById('single-correct');
         const singleCursor = document.getElementById('single-cursor');
         const answersGrid = document.getElementById('answers-grid');
+        const feedbackMsg = document.getElementById('feedback-msg');
 
         // Init
         window.addEventListener('DOMContentLoaded', loadData);
@@ -505,7 +557,8 @@
 
             // Setup Data
             if (gameMode === 'multi') {
-                correctAnswers = parts.map(s => ({
+                correctAnswers = parts.map((s, i) => ({
+                    id: i, // Add ID for tracking
                     display: s,
                     normalized: normalizeString(s),
                     found: false
@@ -570,8 +623,10 @@
             answersGrid.innerHTML = '';
             correctAnswers.forEach(ans => {
                 const pill = document.createElement('div');
+                pill.id = `ans-${ans.id}`; // Add ID for scrolling
                 pill.className = `answer-pill ${ans.found ? 'found' : ''}`;
                 pill.textContent = ans.found ? ans.display : '???';
+                // Initially hide '???' if there are too many? No, better show all slots.
                 answersGrid.appendChild(pill);
             });
         }
@@ -599,10 +654,13 @@
             if (!inputVal) return;
 
             let matched = false;
+            let matchedItem = null;
+
             correctAnswers.forEach(ans => {
                 if (!ans.found && (ans.normalized === inputVal)) {
                     ans.found = true;
                     matched = true;
+                    matchedItem = ans;
                 }
             });
 
@@ -610,7 +668,19 @@
                 foundAnswers.add(inputVal);
                 const currentCount = correctAnswers.filter(a => a.found).length;
                 currentScoreDisplay.textContent = currentCount;
-                renderAnswersGrid();
+
+                // Update specific element instead of re-rendering whole grid to prevent scroll jump (though we want to scroll TO it)
+                const pill = document.getElementById(`ans-${matchedItem.id}`);
+                if (pill) {
+                    pill.classList.add('found');
+                    pill.textContent = matchedItem.display;
+
+                    // Auto-Scroll
+                    pill.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                // Show Feedback
+                showFeedback(matchedItem.display);
 
                 if (clearOnMatch || true) {
                     answerInput.value = '';
@@ -618,6 +688,14 @@
 
                 if (currentCount === correctAnswers.length) finishGame();
             }
+        }
+
+        function showFeedback(text) {
+            feedbackMsg.textContent = `${text} OK!`;
+            feedbackMsg.classList.add('show');
+            setTimeout(() => {
+                feedbackMsg.classList.remove('show');
+            }, 1000);
         }
 
         function checkSingleInput(e) {
