@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-80TMBGVND6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-80TMBGVND6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ | 楽しい暗記サイト</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .profile-info h2 {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn:hover {
+            color: var(--text-main);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            margin: 0.5rem 0;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--accent-purple);
+            padding-left: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .badge-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            opacity: 0.5;
+            /* Locked state */
+            filter: grayscale(100%);
+        }
+
+        .badge-item.unlocked {
+            opacity: 1;
+            filter: grayscale(0%);
+            border-color: var(--accent-pink);
+            background: rgba(255, 0, 85, 0.1);
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-name {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-score {
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+    </style>
+</head>
+
+<body>
+    <nav style="padding: 1.5rem;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="index.html" style="font-weight: 800; font-size: 1.2rem; color: #fff; text-decoration: none;">MEMO
+                GAME</a>
+            <a href="exam.html" class="btn btn-sm">検定へ →</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1 style="margin-bottom: 2rem;">マイページ</h1>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="avatar-circle">👤</div>
+            <div class="profile-info">
+                <h2 id="user-name-display">Player <button class="edit-btn" onclick="editName()">✏️</button></h2>
+                <p id="player-level" style="color: var(--accent-cyan);">Beginner</p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-label">Total Score</span>
+                <span class="stat-value" id="stat-total-score">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Exams Taken</span>
+                <span class="stat-value" id="stat-exams">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Badges</span>
+                <span class="stat-value" id="stat-badges">0/6</span>
+            </div>
+        </div>
+
+        <!-- Badges -->
+        <h3 class="section-title">獲得バッジ</h3>
+        <div class="badge-grid" id="badge-grid">
+            <!-- JS will populate -->
+        </div>
+
+        <!-- History -->
+        <h3 class="section-title">プレイ履歴</h3>
+        <div class="history-list" id="history-list">
+            <p style="color: var(--text-muted); text-align: center;">まだ履歴がありません。<br>検定に挑戦してスコアを記録しよう！</p>
+        </div>
+
+    </main>
+
+    <script src="scripts/user_data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMyPage();
+        });
+
+        function renderMyPage() {
+            const data = UserData.get();
+
+            // Profile
+            document.getElementById('user-name-display').innerHTML = `${data.userName} <button class="edit-btn" onclick="editName()">✏️</button>`;
+
+            // Calc Level (Simple logic)
+            let level = 'Beginner';
+            if (data.totalScore > 100) level = 'Novice';
+            if (data.totalScore > 500) level = 'Advanced';
+            if (data.totalScore > 1000) level = 'Expert';
+            if (data.totalScore > 5000) level = 'Master';
+            document.getElementById('player-level').textContent = level;
+
+            // Stats
+            document.getElementById('stat-total-score').textContent = data.totalScore;
+            document.getElementById('stat-exams').textContent = data.examsTaken;
+
+            // Badges
+            const badgeGrid = document.getElementById('badge-grid');
+            badgeGrid.innerHTML = '';
+
+            let unlockedCount = 0;
+            for (const [id, info] of Object.entries(UserData.BADGES)) {
+                const isUnlocked = data.badges.includes(id);
+                if (isUnlocked) unlockedCount++;
+
+                const bgDiv = document.createElement('div');
+                bgDiv.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
+                bgDiv.innerHTML = `
+                    <span class="badge-icon">${info.icon}</span>
+                    <div class="badge-name">${info.name}</div>
+                    ${isUnlocked ? '' : '<div style="font-size:0.7rem; color:#888;">???</div>'} 
+                `;
+                // Show desc on hover? Mobile friendly simple implementation for now.
+                if (isUnlocked) bgDiv.title = info.desc;
+                badgeGrid.appendChild(bgDiv);
+            }
+            document.getElementById('stat-badges').textContent = `${unlockedCount}/${Object.keys(UserData.BADGES).length}`;
+
+            // History
+            const historyList = document.getElementById('history-list');
+            if (data.history.length > 0) {
+                historyList.innerHTML = '';
+                data.history.forEach(h => {
+                    const date = new Date(h.date).toLocaleDateString();
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.innerHTML = `
+                        <div>
+                            <div style="font-weight:bold;">${h.title}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">${date} - Rank ${h.rank}</div>
+                        </div>
+                        <div class="history-score">${h.score} pts</div>
+                    `;
+                    historyList.appendChild(item);
+                });
+            }
+        }
+
+        function editName() {
+            const newName = prompt("新しい名前を入力してください", UserData.get().userName);
+            if (newName && newName.trim()) {
+                UserData.updateName(newName.trim());
+                renderMyPage();
+            }
+        }
+    </script>
+</body>
+
+</html>

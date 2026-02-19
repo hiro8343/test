@@ -445,6 +445,7 @@
 
     </div>
 
+    <script src="scripts/user_data.js"></script>
     <script>
         // State
         let itemsData = [];
@@ -761,7 +762,8 @@
         }
 
         function showResult() {
-            let score, max, percentage;
+            let score = 0;
+            let max = 0;
 
             if (gameMode === 'multi') {
                 score = correctAnswers.filter(a => a.found).length;
@@ -770,36 +772,41 @@
                 score = currentIndex;
                 max = targetString.length;
             }
-            percentage = (score / max) * 100;
 
-            let rank = 'D';
-            let msg = 'まだまだ！これから伸びるよ。';
-            let rankClass = 'rank-d';
+            // Calculate Rank
+            const percentage = (max > 0) ? (score / max) * 100 : 0;
+            let rank = 'C';
+            let msg = 'まだまだこれから！';
+            let rankClass = 'rank-c';
 
             if (percentage === 100) {
                 rank = 'S';
-                msg = '完璧！まさに記憶の達人！';
+                msg = '完璧です！神レベル！';
                 rankClass = 'rank-s';
             } else if (percentage >= 80) {
                 rank = 'A';
-                msg = '素晴らしい！あと少しでコンプリート。';
+                msg = '素晴らしい！あと少し！';
                 rankClass = 'rank-a';
             } else if (percentage >= 50) {
                 rank = 'B';
-                msg = 'いい感じ！楽しんで覚えてるね。';
+                msg = 'いい感じです！';
                 rankClass = 'rank-b';
-            } else if (percentage >= 30) {
-                rank = 'C';
-                msg = 'その調子！繰り返しが力になる。';
-                rankClass = 'rank-c';
             }
 
-            document.getElementById('result-rank').textContent = rank;
-            document.getElementById('result-rank').className = `rank-badge ${rankClass}`;
+            // Save Result
+            UserData.addResult({
+                title: currentItem.title,
+                score: score,
+                max: max,
+                rank: rank
+            });
+
+            const rankEl = document.getElementById('result-rank');
+            rankEl.textContent = rank;
+            rankEl.className = `rank-badge ${rankClass}`;
+
             document.getElementById('result-score').textContent = score;
             document.getElementById('result-max').textContent = max;
-            document.getElementById('result-message').textContent = msg;
-
             document.getElementById('result-message').textContent = msg;
 
             // Render Details
@@ -816,7 +823,6 @@
                     pill.className = `answer-pill ${ans.found ? 'found' : ''}`;
                     // For result, show the actual answer. If not found, maybe style differently or just show it normal?
                     // User asked to see "what I got right and the actual correct answer".
-                    // Let's show all. Found ones are green/highlighted. Missed ones are normal/grey.
                     pill.textContent = ans.display;
                     if (!ans.found) {
                         pill.style.opacity = '0.7';
