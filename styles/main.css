@@ -9,7 +9,7 @@
     --accent-purple: #bc13fe;
     --accent-green: #0aff68;
     --accent-pink: #ff0055;
-    
+
     /* Gradients */
     --gradient-main: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
     --gradient-glow: radial-gradient(circle at center, rgba(188, 19, 254, 0.2), transparent 70%);
@@ -28,9 +28,11 @@
     /* Effects */
     --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     --shadow-neon: 0 0 15px rgba(0, 243, 255, 0.3);
+    --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 24px;
     --border-glass: 1px solid rgba(255, 255, 255, 0.1);
+    --gradient-primary: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
 }
 
 * {
@@ -50,7 +52,12 @@ body {
     background-attachment: fixed;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: var(--font-heading);
     color: #fff;
     line-height: 1.2;
@@ -119,4 +126,33 @@ ul {
     border-radius: var(--radius-md);
     padding: var(--spacing-md);
     box-shadow: var(--shadow-card);
+}
+
+/* Floating My Page Button */
+.nav-mypage-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nav-mypage-btn:hover {
+    background: var(--accent-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(186, 85, 211, 0.4);
+    border-color: var(--accent-pink);
 }
