@@ -570,7 +570,7 @@
                 answerInput.placeholder = `例: ${correctAnswers[0].display}`;
 
             } else {
-                targetString = item.content.replace(/\s+/g, '');
+                targetString = item.content;
                 currentIndex = 0;
                 maxScoreDisplay.textContent = targetString.length;
 
@@ -706,6 +706,19 @@
             // Get last char
             const char = val.slice(-1);
 
+            // Auto-skip spaces in target string
+            while (currentIndex < targetString.length && targetString[currentIndex] === ' ') {
+                currentIndex++;
+                singleCorrect.textContent = targetString.slice(0, currentIndex);
+                currentScoreDisplay.textContent = currentIndex;
+            }
+
+            if (currentIndex >= targetString.length) {
+                answerInput.value = '';
+                finishGame();
+                return;
+            }
+
             const expected = targetString[currentIndex];
 
             if (isMatch(char, expected)) {
@@ -715,6 +728,13 @@
                 currentScoreDisplay.textContent = currentIndex;
 
                 answerInput.value = '';
+
+                // Auto-skip spaces after correct char
+                while (currentIndex < targetString.length && targetString[currentIndex] === ' ') {
+                    currentIndex++;
+                    singleCorrect.textContent = targetString.slice(0, currentIndex);
+                    currentScoreDisplay.textContent = currentIndex;
+                }
 
                 if (currentIndex >= targetString.length) {
                     finishGame();
