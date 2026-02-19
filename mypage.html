@@ -187,15 +187,15 @@
         <!-- Stats -->
         <div class="stats-row">
             <div class="stat-card">
-                <span class="stat-label">Total Score</span>
+                <span class="stat-label">累計スコア</span>
                 <span class="stat-value" id="stat-total-score">0</span>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Exams Taken</span>
+                <span class="stat-label">受験回数</span>
                 <span class="stat-value" id="stat-exams">0</span>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Badges</span>
+                <span class="stat-label">獲得バッジ</span>
                 <span class="stat-value" id="stat-badges">0/6</span>
             </div>
         </div>
@@ -227,11 +227,11 @@
             document.getElementById('user-name-display').innerHTML = `${data.userName} <button class="edit-btn" onclick="editName()">✏️</button>`;
 
             // Calc Level (Simple logic)
-            let level = 'Beginner';
-            if (data.totalScore > 100) level = 'Novice';
-            if (data.totalScore > 500) level = 'Advanced';
-            if (data.totalScore > 1000) level = 'Expert';
-            if (data.totalScore > 5000) level = 'Master';
+            let level = 'ビギナー';
+            if (data.totalScore > 100) level = 'ノービス';
+            if (data.totalScore > 500) level = 'アドバンス';
+            if (data.totalScore > 1000) level = 'エキスパート';
+            if (data.totalScore > 5000) level = 'マスター';
             document.getElementById('player-level').textContent = level;
 
             // Stats
@@ -271,9 +271,9 @@
                     item.innerHTML = `
                         <div>
                             <div style="font-weight:bold;">${h.title}</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">${date} - Rank ${h.rank}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">${date} - ランク ${h.rank}</div>
                         </div>
-                        <div class="history-score">${h.score} pts</div>
+                        <div class="history-score">${h.score} 点</div>
                     `;
                     historyList.appendChild(item);
                 });
