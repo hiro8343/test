@@ -633,6 +633,70 @@
         }
 
         // Input Handling
+        let isComposing = false; // IME変換中フラグ
+
+        answerInput.addEventListener('compositionstart', () => {
+            isComposing = true;
+        });
+
+        answerInput.addEventListener('compositionend', (e) => {
+            isComposing = false;
+            if (!isGameActive) return;
+
+            if (gameMode === 'single') {
+                // IME変換確定後に1文字ずつチェック
+                const val = answerInput.value;
+                if (val.length > 0) {
+                    // 確定された文字を1文字ずつ処理
+                    for (let i = 0; i < val.length; i++) {
+                        const char = val[i];
+
+                        // スペースの自動スキップ
+                        while (currentIndex < targetString.length && targetString[currentIndex] === ' ') {
+                            currentIndex++;
+                            singleCorrect.textContent = targetString.slice(0, currentIndex);
+                            currentScoreDisplay.textContent = currentIndex;
+                        }
+
+                        if (currentIndex >= targetString.length) {
+                            answerInput.value = '';
+                            finishGame();
+                            return;
+                        }
+
+                        const expected = targetString[currentIndex];
+                        if (isMatch(char, expected)) {
+                            currentIndex++;
+                            singleCorrect.textContent = targetString.slice(0, currentIndex);
+                            currentScoreDisplay.textContent = currentIndex;
+
+                            // スペースの自動スキップ
+                            while (currentIndex < targetString.length && targetString[currentIndex] === ' ') {
+                                currentIndex++;
+                                singleCorrect.textContent = targetString.slice(0, currentIndex);
+                                currentScoreDisplay.textContent = currentIndex;
+                            }
+
+                            if (currentIndex >= targetString.length) {
+                                answerInput.value = '';
+                                finishGame();
+                                return;
+                            }
+                        } else {
+                            // 不正解エフェクト
+                            singleCursor.style.color = 'red';
+                            setTimeout(() => singleCursor.style.color = 'var(--accent-pink)', 200);
+                            break;
+                        }
+                    }
+                    answerInput.value = '';
+                }
+            } else {
+                // multiモードではcompositionend後にチェック
+                checkMultiAnswer(false);
+            }
+        });
+
         answerInput.addEventListener('keydown', (e) => {
             if (!isGameActive) return;
             if (e.key === 'Enter') {
@@ -642,6 +706,8 @@
 
         answerInput.addEventListener('input', (e) => {
             if (!isGameActive) return;
+            // IME変換中はスキップ
+            if (isComposing) return;
 
             if (gameMode === 'multi') {
                 checkMultiAnswer(false);
