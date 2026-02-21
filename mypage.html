@@ -69,6 +69,40 @@
             color: var(--text-main);
         }
 
+        /* ストリーク表示 */
+        .streak-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .streak-card {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 69, 0, 0.1));
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .streak-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .streak-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #ffa500;
+            display: block;
+        }
+
+        .streak-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
         .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -119,7 +153,6 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s;
             opacity: 0.5;
-            /* Locked state */
             filter: grayscale(100%);
         }
 
@@ -141,10 +174,70 @@
             font-weight: bold;
         }
 
+        /* お気に入りリスト */
+        .favorites-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 3rem;
+        }
+
+        .fav-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .fav-item-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .fav-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .fav-actions a,
+        .fav-actions button {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .fav-exam-link {
+            background: rgba(188, 19, 254, 0.2);
+            color: #e0aaff;
+        }
+
+        .fav-remove-btn {
+            background: rgba(255, 0, 85, 0.1);
+            color: var(--accent-pink);
+        }
+
+        .fav-exam-link:hover {
+            background: rgba(188, 19, 254, 0.4);
+        }
+
+        .fav-remove-btn:hover {
+            background: rgba(255, 0, 85, 0.3);
+        }
+
+        /* 履歴 */
         .history-list {
             display: flex;
             flex-direction: column;
             gap: 0.8rem;
+            margin-bottom: 3rem;
         }
 
         .history-item {
@@ -159,6 +252,96 @@
         .history-score {
             font-weight: bold;
             color: var(--accent-green);
+        }
+
+        .history-link {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .history-link:hover {
+            background: rgba(0, 243, 255, 0.25);
+        }
+
+        /* リクエストフォーム */
+        .request-section {
+            background: linear-gradient(135deg, rgba(188, 19, 254, 0.1), rgba(0, 243, 255, 0.05));
+            border: 1px solid rgba(188, 19, 254, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .request-section h3 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .request-section p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .request-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .request-form input,
+        .request-form textarea {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+        }
+
+        .request-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .request-form input:focus,
+        .request-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .request-submit-btn {
+            background: var(--gradient-primary);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            align-self: flex-start;
+        }
+
+        .request-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(188, 19, 254, 0.4);
+        }
+
+        .empty-msg {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 1rem;
         }
     </style>
 </head>
@@ -180,8 +363,14 @@
             <div class="avatar-circle">👤</div>
             <div class="profile-info">
                 <h2 id="user-name-display">Player <button class="edit-btn" onclick="editName()">✏️</button></h2>
-                <p id="player-level" style="color: var(--accent-cyan);">Beginner</p>
+                <p id="player-level" style="color: var(--accent-cyan);">ビギナー</p>
             </div>
+        </div>
+
+        <!-- ストリーク -->
+        <h3 class="section-title">🔥 連続記録</h3>
+        <div class="streak-row" id="streak-row">
+            <!-- JSで生成 -->
         </div>
 
         <!-- Stats -->
@@ -206,10 +395,27 @@
             <!-- JS will populate -->
         </div>
 
+        <!-- お気に入り -->
+        <h3 class="section-title">❤️ お気に入り</h3>
+        <div class="favorites-list" id="favorites-list">
+            <p class="empty-msg">お気に入りはまだありません。<br>検定や暗記リストで ❤️ を押して追加しよう！</p>
+        </div>
+
         <!-- History -->
-        <h3 class="section-title">プレイ履歴</h3>
+        <h3 class="section-title">📜 プレイ履歴</h3>
         <div class="history-list" id="history-list">
-            <p style="color: var(--text-muted); text-align: center;">まだ履歴がありません。<br>検定に挑戦してスコアを記録しよう！</p>
+            <p class="empty-msg">まだ履歴がありません。<br>検定に挑戦してスコアを記録しよう！</p>
+        </div>
+
+        <!-- リクエストフォーム -->
+        <div class="request-section">
+            <h3>📩 暗記リクエスト</h3>
+            <p>「これも暗記検定に入れてほしい！」というものがあれば、ぜひ教えてください！</p>
+            <div class="request-form">
+                <input type="text" id="request-title" placeholder="リクエストのタイトル（例: ポケモン初代151匹）">
+                <textarea id="request-detail" placeholder="詳細やメモ（任意）"></textarea>
+                <button class="request-submit-btn" onclick="sendRequest()">📨 リクエストを送る</button>
+            </div>
         </div>
 
     </main>
@@ -223,10 +429,10 @@
         function renderMyPage() {
             const data = UserData.get();
 
-            // Profile
+            // プロフィール
             document.getElementById('user-name-display').innerHTML = `${data.userName} <button class="edit-btn" onclick="editName()">✏️</button>`;
 
-            // Calc Level (Simple logic)
+            // レベル計算
             let level = 'ビギナー';
             if (data.totalScore > 100) level = 'ノービス';
             if (data.totalScore > 500) level = 'アドバンス';
@@ -234,11 +440,48 @@
             if (data.totalScore > 5000) level = 'マスター';
             document.getElementById('player-level').textContent = level;
 
-            // Stats
+            // 統計
             document.getElementById('stat-total-score').textContent = data.totalScore;
             document.getElementById('stat-exams').textContent = data.examsTaken;
 
-            // Badges
+            // ストリーク
+            renderStreaks();
+
+            // バッジ
+            renderBadges(data);
+
+            // お気に入り
+            renderFavorites(data);
+
+            // 履歴
+            renderHistory(data);
+        }
+
+        function renderStreaks() {
+            const streaks = UserData.getStreaks();
+            const streakRow = document.getElementById('streak-row');
+            streakRow.innerHTML = '';
+
+            const items = [
+                { icon: '🔥', value: streaks.days, label: '日連続' },
+                { icon: '📅', value: streaks.weeks, label: '週連続' },
+                { icon: '🗓️', value: streaks.months, label: 'ヶ月連続' },
+                { icon: '🏆', value: streaks.years, label: '年連続' }
+            ];
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'streak-card';
+                card.innerHTML = `
+                    <span class="streak-icon">${item.icon}</span>
+                    <span class="streak-value">${item.value}</span>
+                    <span class="streak-label">${item.label}</span>
+                `;
+                streakRow.appendChild(card);
+            });
+        }
+
+        function renderBadges(data) {
             const badgeGrid = document.getElementById('badge-grid');
             badgeGrid.innerHTML = '';
 
@@ -252,32 +495,64 @@
                 bgDiv.innerHTML = `
                     <span class="badge-icon">${info.icon}</span>
                     <div class="badge-name">${info.name}</div>
-                    ${isUnlocked ? '' : '<div style="font-size:0.7rem; color:#888;">???</div>'} 
+                    ${isUnlocked ? '' : '<div style="font-size:0.7rem; color:#888;">???</div>'}
                 `;
-                // Show desc on hover? Mobile friendly simple implementation for now.
                 if (isUnlocked) bgDiv.title = info.desc;
                 badgeGrid.appendChild(bgDiv);
             }
             document.getElementById('stat-badges').textContent = `${unlockedCount}/${Object.keys(UserData.BADGES).length}`;
+        }
 
-            // History
-            const historyList = document.getElementById('history-list');
-            if (data.history.length > 0) {
-                historyList.innerHTML = '';
-                data.history.forEach(h => {
-                    const date = new Date(h.date).toLocaleDateString();
-                    const item = document.createElement('div');
-                    item.className = 'history-item';
-                    item.innerHTML = `
-                        <div>
-                            <div style="font-weight:bold;">${h.title}</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">${date} - ランク ${h.rank}</div>
-                        </div>
-                        <div class="history-score">${h.score} 点</div>
-                    `;
-                    historyList.appendChild(item);
-                });
+        function renderFavorites(data) {
+            const favList = document.getElementById('favorites-list');
+
+            if (!data.favorites || data.favorites.length === 0) {
+                favList.innerHTML = '<p class="empty-msg">お気に入りはまだありません。<br>検定や暗記リストで ❤️ を押して追加しよう！</p>';
+                return;
             }
+
+            favList.innerHTML = '';
+            data.favorites.forEach(fav => {
+                const item = document.createElement('div');
+                item.className = 'fav-item';
+                item.innerHTML = `
+                    <div class="fav-item-info">
+                        <span>❤️</span>
+                        <div>
+                            <div style="font-weight:bold;">${fav.title}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">${fav.category || ''}</div>
+                        </div>
+                    </div>
+                    <div class="fav-actions">
+                        <a href="exam.html?title=${encodeURIComponent(fav.title)}" class="fav-exam-link">🎯 検定へ</a>
+                        <button class="fav-remove-btn" onclick="removeFav('${fav.title.replace(/'/g, "\\'")}')">✕</button>
+                    </div>
+                `;
+                favList.appendChild(item);
+            });
+        }
+
+        function renderHistory(data) {
+            const historyList = document.getElementById('history-list');
+            if (data.history.length === 0) {
+                historyList.innerHTML = '<p class="empty-msg">まだ履歴がありません。<br>検定に挑戦してスコアを記録しよう！</p>';
+                return;
+            }
+
+            historyList.innerHTML = '';
+            data.history.forEach(h => {
+                const date = new Date(h.date).toLocaleDateString();
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold;">${h.title}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">${date} - ランク ${h.rank} - ${h.score} 点</div>
+                    </div>
+                    <a href="exam.html?title=${encodeURIComponent(h.title)}" class="history-link">🔄 もう一度</a>
+                `;
+                historyList.appendChild(item);
+            });
         }
 
         function editName() {
@@ -286,6 +561,31 @@
                 UserData.updateName(newName.trim());
                 renderMyPage();
             }
+        }
+
+        function removeFav(title) {
+            UserData.removeFavorite(title);
+            renderMyPage();
+        }
+
+        function sendRequest() {
+            const title = document.getElementById('request-title').value.trim();
+            const detail = document.getElementById('request-detail').value.trim();
+
+            if (!title) {
+                alert('タイトルを入力してください');
+                return;
+            }
+
+            const subject = encodeURIComponent(`【暗記リクエスト】${title}`);
+            const body = encodeURIComponent(`リクエスト: ${title}\n\n詳細:\n${detail || '(なし)'}\n\n---\n送信元: 楽しい暗記サイト マイページ`);
+            const mailtoUrl = `mailto:hiro.mosmos.jp@gmail.com?subject=${subject}&body=${body}`;
+
+            window.location.href = mailtoUrl;
+
+            // フォームクリア
+            document.getElementById('request-title').value = '';
+            document.getElementById('request-detail').value = '';
         }
     </script>
 </body>

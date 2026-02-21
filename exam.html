@@ -496,6 +496,16 @@
                 const res = await fetch('data/cool_items.json');
                 itemsData = await res.json();
                 renderThemeSelect('all');
+
+                // URLパラメータで検定タイトルが指定されていれば自動開始
+                const urlParams = new URLSearchParams(window.location.search);
+                const targetTitle = urlParams.get('title');
+                if (targetTitle) {
+                    const targetItem = itemsData.find(item => item.title === targetTitle);
+                    if (targetItem) {
+                        startGame(targetItem);
+                    }
+                }
             } catch (e) {
                 console.error("Failed to load data", e);
                 themeGrid.innerHTML = '<p>データの読み込みに失敗しました。</p>';
@@ -532,7 +542,11 @@
                         <span>${item.category.toUpperCase()}</span>
                         <span>${isSingle ? '長文チャレンジ' : `全 ${parts.length} 問`}</span>
                     </div>
+                    <button class="fav-toggle-btn" onclick="event.stopPropagation(); toggleFav('${item.title.replace(/'/g, "\\'")}',' ${item.category}', this)" style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; font-size:1.3rem; opacity:0.7; transition:all 0.3s;">
+                        ${UserData.isFavorite(item.title) ? '❤️' : '🤍'}
+                    </button>
                 `;
+                card.style.position = 'relative';
                 card.onclick = () => startGame(item);
                 themeGrid.appendChild(card);
             });
@@ -541,6 +555,17 @@
         function switchView(viewId) {
             [viewSelect, viewPlay, viewResult].forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
+        }
+
+        // お気に入りトグル
+        function toggleFav(title, category, btn) {
+            if (UserData.isFavorite(title)) {
+                UserData.removeFavorite(title);
+                btn.textContent = '🤍';
+            } else {
+                UserData.addFavorite({ title: title, category: category.trim() });
+                btn.textContent = '❤️';
+            }
         }
 
         function normalizeString(str) {

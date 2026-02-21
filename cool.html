@@ -255,6 +255,7 @@
         </div>
     </dialog>
 
+    <script src="scripts/user_data.js"></script>
     <script>
         const grid = document.getElementById('grid');
         const buttons = document.querySelectorAll('.filter-btn');
@@ -383,6 +384,7 @@
                 const div = document.createElement('div');
                 div.className = 'cool-card animate-fade-in';
                 div.style.animationDelay = `${index * 0.05}s`;
+                div.style.position = 'relative';
 
                 // Calculate length if exists, otherwise display 0 or approximate
                 const length = item.content ? item.content.length : 0;
@@ -395,6 +397,9 @@
                         <span>かっこよさ ${'★'.repeat(item.stars)}${'☆'.repeat(5 - item.stars)}</span>
                         <span class="char-count">${length}文字</span>
                     </div>
+                    <button onclick="event.stopPropagation(); toggleFav('${item.title.replace(/'/g, "\\'")}',' ${item.category}', this)" style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; font-size:1.3rem; opacity:0.7; transition:all 0.3s;">
+                        ${UserData.isFavorite(item.title) ? '❤️' : '🤍'}
+                    </button>
                 `;
 
                 // Add click event for modal
@@ -435,6 +440,21 @@
                 linksContainer.appendChild(a);
             }
 
+            // お気に入りボタンをモーダルに追加
+            const favBtn = document.createElement('button');
+            favBtn.style.cssText = 'background:none; border:1px solid rgba(255,255,255,0.2); padding:8px 16px; border-radius:20px; cursor:pointer; font-size:0.9rem; transition:all 0.3s; color:#fff;';
+            favBtn.textContent = UserData.isFavorite(item.title) ? '❤️ お気に入り済み' : '🤍 お気に入りに追加';
+            favBtn.onclick = () => {
+                if (UserData.isFavorite(item.title)) {
+                    UserData.removeFavorite(item.title);
+                    favBtn.textContent = '🤍 お気に入りに追加';
+                } else {
+                    UserData.addFavorite({ title: item.title, category: item.category });
+                    favBtn.textContent = '❤️ お気に入り済み';
+                }
+            };
+            linksContainer.appendChild(favBtn);
+
             modal.showModal();
         }
 
@@ -463,6 +483,16 @@
                 modal.close();
             }
         });
+        // お気に入りトグル（カード用）
+        function toggleFav(title, category, btn) {
+            if (UserData.isFavorite(title)) {
+                UserData.removeFavorite(title);
+                btn.textContent = '🤍';
+            } else {
+                UserData.addFavorite({ title: title, category: category.trim() });
+                btn.textContent = '❤️';
+            }
+        }
     </script>
     <a href="mypage.html" class="nav-mypage-btn">👤 My Page</a>
 </body>
