@@ -226,6 +226,36 @@ const BADGE_INFO = {
     'rank_s_master': { icon: '✨', name: 'Sランクの輝き', desc: 'Sランクを獲得した' }
 };
 
+// --- Requests Management ---
+const REQUESTS_STORAGE_KEY = 'memo_game_requests_v1';
+
+function getRequests() {
+    const data = localStorage.getItem(REQUESTS_STORAGE_KEY);
+    if (!data) return [];
+    try {
+        return JSON.parse(data);
+    } catch (e) {
+        return [];
+    }
+}
+
+function addRequest(title, detail) {
+    const reqs = getRequests();
+    reqs.push({
+        id: Date.now(),
+        title: title,
+        detail: detail,
+        date: new Date().toISOString()
+    });
+    localStorage.setItem(REQUESTS_STORAGE_KEY, JSON.stringify(reqs));
+}
+
+function removeRequest(id) {
+    let reqs = getRequests();
+    reqs = reqs.filter(r => r.id !== id);
+    localStorage.setItem(REQUESTS_STORAGE_KEY, JSON.stringify(reqs));
+}
+
 // Export
 window.UserData = {
     get: getUserData,
@@ -235,5 +265,8 @@ window.UserData = {
     removeFavorite: removeFavorite,
     isFavorite: isFavorite,
     getStreaks: getStreaks,
-    BADGES: BADGE_INFO
+    BADGES: BADGE_INFO,
+    getRequests: getRequests,
+    addRequest: addRequest,
+    removeRequest: removeRequest
 };

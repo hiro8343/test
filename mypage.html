@@ -577,11 +577,8 @@
                 return;
             }
 
-            const subject = encodeURIComponent(`【暗記リクエスト】${title}`);
-            const body = encodeURIComponent(`リクエスト: ${title}\n\n詳細:\n${detail || '(なし)'}\n\n---\n送信元: 楽しい暗記サイト マイページ`);
-            const mailtoUrl = `mailto:hiro.mosmos.jp@gmail.com?subject=${subject}&body=${body}`;
-
-            window.location.href = mailtoUrl;
+            UserData.addRequest(title, detail);
+            alert('リクエストを送信しました！ありがとうございます😊');
 
             // フォームクリア
             document.getElementById('request-title').value = '';

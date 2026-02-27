@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-80TMBGVND6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-80TMBGVND6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗記リクエスト一覧 | 楽しい暗記サイト</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        body {
+            background: #0f0f13;
+            color: #eee;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: none;
+            /* 初期状態では非表示（パスワード解除後に表示） */
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .h1-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .request-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .request-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .request-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .request-detail {
+            color: #ddd;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 0, 85, 0.1);
+            color: var(--accent-pink);
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 0, 85, 0.3);
+            color: #fff;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        /* パスワード画面オーバーレイ */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 19, 0.98);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .password-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .password-box h2 {
+            margin-bottom: 1.5rem;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .password-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            text-align: center;
+            letter-spacing: 8px;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .password-btn {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: #fff;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .password-btn:hover {
+            box-shadow: 0 5px 15px rgba(188, 19, 254, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .error-msg {
+            color: var(--accent-pink);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- パスワード認証画面 -->
+    <div class="password-overlay" id="password-overlay">
+        <div class="password-box">
+            <h2>🔒 ADMIN LOGIN</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                リクエスト一覧を見るには<br>パスワードを入力してください
+            </p>
+            <input type="password" id="password-input" class="password-input" maxlength="20" placeholder="••••">
+            <button class="password-btn" onclick="checkPassword()">ログイン</button>
+            <div class="error-msg" id="password-error">パスワードが違います</div>
+
+            <div style="margin-top: 2rem;">
+                <a href="mypage.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">←
+                    マイページに戻る</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- リクエスト一覧画面 -->
+    <div class="admin-container" id="admin-container">
+        <header class="admin-header">
+            <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">USER REQUESTS</div>
+                <h1 class="h1-title">暗記リクエスト一覧</h1>
+            </div>
+            <a href="mypage.html" style="color: var(--text-muted); text-decoration: none;">← マイページに戻る</a>
+        </header>
+
+        <main id="requests-list">
+            <!-- JSでリクエストを生成 -->
+            <div class="empty-msg">読み込み中...</div>
+        </main>
+    </div>
+
+    <script src="scripts/user_data.js"></script>
+    <script>
+        // パスワードチェック (Enterキー対応)
+        document.getElementById('password-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const errorMsg = document.getElementById('password-error');
+
+            // --- 指定されたパスワード(8343) ---
+            if (input === '8343') {
+                // 認証成功
+                document.getElementById('password-overlay').style.display = 'none';
+                document.getElementById('admin-container').style.display = 'block';
+                loadRequests();
+            } else {
+                // 認証失敗
+                errorMsg.style.display = 'block';
+                document.getElementById('password-input').value = ''; // クリア
+
+                // シェイクアニメーション
+                const box = document.querySelector('.password-box');
+                box.style.transform = 'translate(5px, 0)';
+                setTimeout(() => box.style.transform = 'translate(-5px, 0)', 50);
+                setTimeout(() => box.style.transform = 'translate(5px, 0)', 100);
+                setTimeout(() => box.style.transform = 'translate(-5px, 0)', 150);
+                setTimeout(() => box.style.transform = 'translate(0, 0)', 200);
+            }
+        }
+
+        function loadRequests() {
+            const container = document.getElementById('requests-list');
+            container.innerHTML = '';
+
+            const reqs = UserData.getRequests();
+            // 降順（新しい順）に並べ替える
+            reqs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (reqs.length === 0) {
+                container.innerHTML = '<div class="empty-msg">現在、リクエストはありません🍀</div>';
+                return;
+            }
+
+            reqs.forEach(req => {
+                const dateObj = new Date(req.date);
+                const dateStr = \`\${dateObj.getFullYear()}/\${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/\${dateObj.getDate().toString().padStart(2, '0')} \${dateObj.getHours().toString().padStart(2, '0')}:\${dateObj.getMinutes().toString().padStart(2, '0')} \`;
+                
+                // HTMLエスケープ処理（簡易版）
+                const escapeHtml = (text) => {
+                    if (!text) return '';
+                    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+                };
+
+                const div = document.createElement('div');
+                div.className = 'request-item';
+                div.innerHTML = \`
+                    <div class="request-date">\${dateStr}</div>
+                    <div class="request-title">\${escapeHtml(req.title)}</div>
+                    \${req.detail ? \`<div class="request-detail">\${escapeHtml(req.detail)}</div>\` : ''}
+                    <button class="delete-btn" onclick="removeRequestItem(\${req.id})">削除 / 解決済みにする</button>
+                \`;
+                container.appendChild(div);
+            });
+        }
+
+        function removeRequestItem(id) {
+            if (confirm('このリクエストを削除（解決済み）にしてよろしいですか？')) {
+                UserData.removeRequest(id);
+                loadRequests(); // 再描画
+            }
+        }
+    </script>
+</body>
+
+</html>
