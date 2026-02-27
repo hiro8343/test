@@ -410,11 +410,13 @@
         <!-- リクエストフォーム -->
         <div class="request-section">
             <h3>📩 暗記リクエスト</h3>
-            <p>「これも暗記検定に入れてほしい！」というものがあれば、ぜひ教えてください！</p>
-            <div class="request-form">
-                <input type="text" id="request-title" placeholder="リクエストのタイトル（例: ポケモン初代151匹）">
-                <textarea id="request-detail" placeholder="詳細やメモ（任意）"></textarea>
-                <button class="request-submit-btn" onclick="sendRequest()">📨 リクエストを送る</button>
+            <p>「これも暗記検定に入れてほしい！」というものがあれば、ぜひ教えてください！<br>
+                リクエストは専用のGoogleフォームから受け付けています。
+            </p>
+            <div class="request-actions">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSesS7TIUjmuclvi_psgG0baniDDmzlrdzhAYZGEMnfhSzjQcg/viewform?usp=publish-editor"
+                    target="_blank" class="request-submit-btn" style="text-decoration: none; display: inline-block;">📨
+                    フォームを開く</a>
             </div>
         </div>
 
@@ -566,23 +568,6 @@
         function removeFav(title) {
             UserData.removeFavorite(title);
             renderMyPage();
-        }
-
-        function sendRequest() {
-            const title = document.getElementById('request-title').value.trim();
-            const detail = document.getElementById('request-detail').value.trim();
-
-            if (!title) {
-                alert('タイトルを入力してください');
-                return;
-            }
-
-            UserData.addRequest(title, detail);
-            alert('リクエストを送信しました！ありがとうございます😊');
-
-            // フォームクリア
-            document.getElementById('request-title').value = '';
-            document.getElementById('request-detail').value = '';
         }
     </script>
 </body>
