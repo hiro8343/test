@@ -274,8 +274,8 @@
 
             reqs.forEach(req => {
                 const dateObj = new Date(req.date);
-                const dateStr = \`\${dateObj.getFullYear()}/\${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/\${dateObj.getDate().toString().padStart(2, '0')} \${dateObj.getHours().toString().padStart(2, '0')}:\${dateObj.getMinutes().toString().padStart(2, '0')} \`;
-                
+                const dateStr = `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getDate().toString().padStart(2, '0')} ${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')} `;
+
                 // HTMLエスケープ処理（簡易版）
                 const escapeHtml = (text) => {
                     if (!text) return '';
@@ -284,12 +284,12 @@
 
                 const div = document.createElement('div');
                 div.className = 'request-item';
-                div.innerHTML = \`
-                    <div class="request-date">\${dateStr}</div>
-                    <div class="request-title">\${escapeHtml(req.title)}</div>
-                    \${req.detail ? \`<div class="request-detail">\${escapeHtml(req.detail)}</div>\` : ''}
-                    <button class="delete-btn" onclick="removeRequestItem(\${req.id})">削除 / 解決済みにする</button>
-                \`;
+                div.innerHTML = `
+                    <div class="request-date">${dateStr}</div>
+                    <div class="request-title">${escapeHtml(req.title)}</div>
+                    ${req.detail ? `<div class="request-detail">${escapeHtml(req.detail)}</div>` : ''}
+                    <button class="delete-btn" onclick="removeRequestItem(${req.id})">削除 / 解決済みにする</button>
+                `;
                 container.appendChild(div);
             });
         }
