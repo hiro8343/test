@@ -245,8 +245,19 @@
         <div class="modal-content">
             <button id="close-modal" class="close-btn">&times;</button>
             <span class="card-cat" id="modal-cat">CATEGORY</span>
-            <h2 id="modal-title" style="margin-bottom: 0.5rem; color: #fff;">Title</h2>
-            <div class="modal-meta">文字数: <span id="modal-length">0</span>文字</div>
+            <div class="modal-meta" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>文字数: <span id="modal-length">0</span>文字</span>
+                <button class="btn btn-sm" onclick="shareItem()"
+                    style="padding: 4px 12px; font-size: 0.8rem; background: rgba(0, 243, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); display: flex; align-items: center; gap: 0.3rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                    </svg>
+                    シェア
+                </button>
+            </div>
             <div id="modal-links" class="modal-links"></div>
             <p id="modal-desc" style="color: var(--text-muted); margin-bottom: 1rem;">Description</p>
             <div class="modal-body custom-scrollbar" id="modal-content">
@@ -356,6 +367,7 @@
 
                 coolItems = parseCSV(text);
                 render('all');
+                checkUrlParam();
             } catch (error) {
                 console.error('Error loading data:', error);
 
@@ -365,8 +377,20 @@
                     const response = await fetch('data/cool_items.json');
                     coolItems = await response.json();
                     render('all');
+                    checkUrlParam();
                 } catch (e) {
                     grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-pink);">データの読み込みに失敗しました。</p>';
+                }
+            }
+        }
+
+        function checkUrlParam() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetTitle = urlParams.get('title');
+            if (targetTitle && coolItems.length > 0) {
+                const targetItem = coolItems.find(item => item.title === targetTitle);
+                if (targetItem) {
+                    openModal(targetItem);
                 }
             }
         }
@@ -458,10 +482,46 @@
             modal.showModal();
         }
 
+        async function shareItem() {
+            const title = document.getElementById('modal-title').textContent;
+            const desc = document.getElementById('modal-desc').textContent;
+
+            // Generate the URL to the exact item by passing ?title param to the page
+            const url = new URL(window.location.href);
+            url.searchParams.set('title', title);
+            const shareUrl = url.toString();
+
+            const shareData = {
+                title: `${title} - 楽しい暗記サイト`,
+                text: `「${title}」\n${desc}\n`,
+                url: shareUrl
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                    alert('リンクをコピーしました！お友達にシェアしてね✨');
+                }
+            } catch (err) {
+                console.error('Share failed:', err);
+            }
+        }
+
         // Init
         loadData();
 
         // Event Listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            // URLパラメータで特定のアイテムが指定されていれば自動でモーダルを開く
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetTitle = urlParams.get('title');
+            if (targetTitle) {
+                // coolItemsがロードされるまで少し待つ処理を下で呼び出す
+            }
+        });
+
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 buttons.forEach(b => b.classList.remove('active'));

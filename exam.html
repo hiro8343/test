@@ -386,7 +386,20 @@
                 </div>
 
                 <div class="question-area">
-                    <h2 id="question-title">タイトル</h2>
+                    <div
+                        style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <h2 id="question-title" style="margin-bottom: 0;">タイトル</h2>
+                        <button class="btn btn-sm" onclick="shareExam()"
+                            style="padding: 4px 12px; font-size: 0.8rem; background: rgba(0, 243, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); display: flex; align-items: center; gap: 0.3rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16 6 12 2 8 6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            シェア
+                        </button>
+                    </div>
                     <p id="question-desc" style="color: var(--text-muted); font-size: 0.9rem;">説明文</p>
                 </div>
 
@@ -570,6 +583,29 @@
 
         function normalizeString(str) {
             return str.replace(/[\(（][^\)）]+[\)）]/g, "").trim();
+        }
+
+        async function shareExam() {
+            if (!currentItem) return;
+            const url = new URL(window.location.href);
+            url.searchParams.set('title', currentItem.title);
+            const shareUrl = url.toString();
+            const shareData = {
+                title: `${currentItem.title} - 暗記検定`,
+                text: `「${currentItem.title}」の暗記検定に挑戦しよう！\n`,
+                url: shareUrl
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                    alert('検定のURLをコピーしました！お友達にシェアしてね✨');
+                }
+            } catch (err) {
+                console.error('Share failed:', err);
+            }
         }
 
         function startGame(item) {
