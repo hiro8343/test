@@ -156,3 +156,22 @@ ul {
     box-shadow: 0 6px 20px rgba(186, 85, 211, 0.4);
     border-color: var(--accent-pink);
 }
+
+/* Floating Back Button */
+.nav-back {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    opacity: 0.7;
+    z-index: 100;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.nav-back:hover {
+    opacity: 1;
+    color: var(--accent-cyan);
+    transform: translateX(-5px);
+    text-shadow: var(--shadow-neon);
+}
