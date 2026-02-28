@@ -445,6 +445,14 @@
             const linksContainer = document.getElementById('modal-links');
             linksContainer.innerHTML = ''; // Clear previous links
 
+            // 検定へのリンクを追加
+            const examBtn = document.createElement('a');
+            examBtn.href = `exam.html?title=${encodeURIComponent(item.title)}`;
+            examBtn.className = 'link-btn';
+            examBtn.style.cssText = 'background: rgba(10, 255, 104, 0.2); color: var(--accent-green); border-color: var(--accent-green);';
+            examBtn.textContent = '🎯 検定に挑戦する';
+            linksContainer.appendChild(examBtn);
+
             if (item.explanationUrl) {
                 const a = document.createElement('a');
                 a.href = item.explanationUrl;
