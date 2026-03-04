@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>広告を見て社会貢献 | Memorization is a Game</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+
+    <!-- Google AdSense Tag -->
+    <!-- いただいたタグをこちらに配置しています。自動広告が有効であればページ内に広告が表示されます -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1639788448626875"
+        crossorigin="anonymous"></script>
+
+    <style>
+        .donation-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            max-width: 800px;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .content-box h1 {
+            color: var(--accent-pink);
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+        }
+
+        .content-box p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        .highlight {
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        .ad-container {
+            margin: 2rem 0;
+            padding: 2rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .ad-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-btn:hover {
+            background: var(--accent-pink);
+            border-color: var(--accent-pink);
+            transform: translateY(-2px);
+        }
+
+        /* Background decor */
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.2;
+        }
+
+        .orb-pink {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-pink);
+            top: 20%;
+            left: 10%;
+            animation: float 8s infinite alternate;
+        }
+
+        .orb-cyan {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-cyan);
+            bottom: 10%;
+            right: 10%;
+            animation: float 6s infinite alternate-reverse;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-orb orb-pink"></div>
+    <div class="bg-orb orb-cyan"></div>
+
+    <main class="donation-hero">
+        <div class="content-box animate-fade-in" style="animation-delay: 0.1s;">
+            <h1>🤝 広告を見て社会貢献</h1>
+            <p>
+                このページに表示される広告をご覧いただくことで発生する収益の一部は、<br>
+                <span class="highlight">寄付を通じて社会貢献活動</span>に役立てられます。<br>
+                あなたの少しの時間が、誰かの大きな助けになります✨
+            </p>
+
+            <div class="ad-container" style="animation-delay: 0.3s;">
+                <span class="ad-label">Advertisement（スポンサーリンク）</span>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 1rem;">
+                    ※ここにGoogle AdSenseの広告が表示される予定です。<br>
+                    （自動広告が設定されている場合、枠内やページ内の最適な場所に表示されます）
+                </p>
+            </div>
+
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 1rem;" style="animation-delay: 0.5s;">
+                アクセスしていただき、本当にありがとうございます！<br>
+                一緒に、少しだけ世界を良くするお手伝いをしませんか？
+            </p>
+
+            <a href="index.html" class="back-btn" style="animation-delay: 0.7s;">← トップページに戻る</a>
+        </div>
+    </main>
+
+    <a href="mypage.html" class="nav-mypage-btn">👤 マイページ</a>
+</body>
+
+</html>
