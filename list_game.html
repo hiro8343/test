@@ -227,24 +227,22 @@
         const { useState, useEffect, useRef, useMemo } = React;
 
         // --- Utils & Constants ---
-        const ALL_COUNTRIES = window.COUNTRY_LIST || [];
         const PHASES = { IDLE: 'idle', MEMORIZE: 'memorize', WAITING: 'waiting', INPUT: 'input', RESULT: 'result' };
 
         const PROMPTS = [
             "頭の中で1番から順番に声に出してみよう",
-            "目を閉じて、国名を映像として思い浮かべてみよう",
-            "地図上でその国がどこにあるか想像してみよう",
-            "国名をリズムに乗せて心の中で歌ってみよう",
-            "それぞれの国名の文字数を数えながら思い出そう"
+            "目を閉じて、リストを映像として思い浮かべてみよう",
+            "声に出してリズムに乗りながら読もう",
+            "それぞれの項目の文字数を数えながら思い出そう"
         ];
 
         // SRS Logic (simplified SM-2)
-        const loadSRS = () => JSON.parse(localStorage.getItem('countrySrsData') || '{}');
-        const saveSRS = (data) => localStorage.setItem('countrySrsData', JSON.stringify(data));
+        const loadSRS = (listId) => JSON.parse(localStorage.getItem(`listSrsData_${listId}`) || '{}');
+        const saveSRS = (listId, data) => localStorage.setItem(`listSrsData_${listId}`, JSON.stringify(data));
 
-        const updateSRS = (srsData, country, isCorrect) => {
+        const updateSRS = (srsData, item, isCorrect) => {
             const now = Date.now();
-            const record = srsData[country] || { easeFactor: 2.5, interval: 0, nextReviewTime: 0, isWeak: false };
+            const record = srsData[item] || { easeFactor: 2.5, interval: 0, nextReviewTime: 0, isWeak: false };
 
             if (isCorrect) {
                 if (record.interval === 0) record.interval = 1;
@@ -257,26 +255,27 @@
                 record.isWeak = true;
             }
             record.nextReviewTime = now + record.interval * 24 * 60 * 60 * 1000;
-            return { ...srsData, [country]: record };
+            return { ...srsData, [item]: record };
         };
 
         const getReviewCount = (srsData) => {
+            if (!srsData) return 0;
             const now = Date.now();
             return Object.values(srsData).filter(item => item.nextReviewTime < now || item.isWeak).length;
         };
 
-        const selectCountries = (srsData, count) => {
+        const selectItems = (all_items, srsData, count) => {
             const now = Date.now();
             let reviews = [];
             let newItems = [];
 
             // Separate into due items and new/future items
-            for (const country of ALL_COUNTRIES) {
-                const record = srsData[country];
+            for (const item of all_items) {
+                const record = srsData[item];
                 if (record && (record.isWeak || record.nextReviewTime < now)) {
-                    reviews.push({ country, score: record.nextReviewTime });
+                    reviews.push({ item, score: record.nextReviewTime });
                 } else if (!record) {
-                    newItems.push({ country, score: Math.random() });
+                    newItems.push({ item, score: Math.random() });
                 }
             }
 
@@ -286,11 +285,11 @@
             newItems.sort((a, b) => a.score - b.score);
 
             const selected = [];
-            for (const item of reviews) {
-                if (selected.length < count) selected.push(item.country);
+            for (const review of reviews) {
+                if (selected.length < count) selected.push(review.item);
             }
-            for (const item of newItems) {
-                if (selected.length < count) selected.push(item.country);
+            for (const newItem of newItems) {
+                if (selected.length < count) selected.push(newItem.item);
             }
 
             // Shuffle selected
@@ -300,7 +299,12 @@
         // --- Main App Component ---
         const App = () => {
             const [phase, setPhase] = useState(PHASES.IDLE);
-            const [srsData, setSrsData] = useState(loadSRS());
+
+            // Available Lists
+            const [availableLists, setAvailableLists] = useState([]);
+            const [selectedListId, setSelectedListId] = useState(null);
+
+            const [srsData, setSrsData] = useState({});
 
             // Settings
             const [count, setCount] = useState(5);
@@ -310,19 +314,79 @@
             const [targets, setTargets] = useState([]);
             const [timeLeft, setTimeLeft] = useState(0);
             const [inputs, setInputs] = useState([]);
-            const [results, setResults] = useState([]); // Array of { country, isCorrect, hintsRequired }
+            const [results, setResults] = useState([]); // Array of { item, isCorrect, hintsRequired }
             const [promptIndex, setPromptIndex] = useState(0);
+            const [isLoading, setIsLoading] = useState(true);
+
+            // Load all lists
+            useEffect(() => {
+                const loadData = async () => {
+                    try {
+                        let merged_lists = [];
+
+                        // first push country list if it exists
+                        if (window.COUNTRY_LIST) {
+                            merged_lists.push({
+                                id: 'countries',
+                                category: 'world',
+                                title: '世界196カ国',
+                                description: '外務省掲載の約196か国の国名を暗記',
+                                items: window.COUNTRY_LIST
+                            });
+                        }
+
+                        const res = await fetch('data/cool_items.json');
+                        const data = await res.json();
+
+                        const dynamicLists = data
+                            .map(item => ({ ...item, items: item.content.split(',').map(s => s.trim()).filter(s => s !== '') }))
+                            .filter(item => item.items.length >= 2);
+
+                        merged_lists = merged_lists.concat(dynamicLists);
+                        setAvailableLists(merged_lists);
+
+                        // Select first list by default
+                        if (merged_lists.length > 0) {
+                            setSelectedListId(merged_lists[0].id);
+                        }
+                    } catch (err) {
+                        console.error('Data load error:', err);
+                    } finally {
+                        setIsLoading(false);
+                    }
+                };
+                loadData();
+            }, []);
+
+            // Handle Selection Change
+            useEffect(() => {
+                if (selectedListId) {
+                    setSrsData(loadSRS(selectedListId));
+                }
+            }, [selectedListId]);
 
             // Save SRS data on change
-            useEffect(() => { saveSRS(srsData); }, [srsData]);
+            useEffect(() => {
+                if (selectedListId) {
+                    saveSRS(selectedListId, srsData);
+                }
+            }, [srsData, selectedListId]);
 
             const reviewCount = getReviewCount(srsData);
 
+            const getSelectedListData = () => availableLists.find(l => l.id === selectedListId);
+
             // --- Handlers ---
             const startNewGame = () => {
-                const selected = selectCountries(srsData, count);
+                const curList = getSelectedListData();
+                if (!curList) return;
+
+                // Max count shouldn't exceed total list items
+                const actualCount = Math.min(count, curList.items.length);
+
+                const selected = selectItems(curList.items, srsData, actualCount);
                 setTargets(selected);
-                setInputs(Array(count).fill(''));
+                setInputs(Array(actualCount).fill(''));
                 setPhase(PHASES.MEMORIZE);
             };
 
@@ -374,7 +438,7 @@
                     // Update SRS only on first check (hintsRequired = 0)
                     newSrsData = updateSRS(newSrsData, target, isCorrect);
 
-                    return { country: target, isCorrect, hintsRequired: isCorrect ? 0 : 1 };
+                    return { item: target, isCorrect, hintsRequired: isCorrect ? 0 : 1 };
                 });
 
                 setSrsData(newSrsData);
@@ -384,7 +448,7 @@
 
             const submitRetry = (index, value) => {
                 const res = [...results];
-                const target = res[index].country;
+                const target = res[index].item;
                 if (value.trim() === target) {
                     res[index].isCorrect = true;
                 } else {
@@ -394,48 +458,69 @@
             };
 
             // --- Render Helpers ---
-            const renderIdle = () => (
-                <div className="card animate-fade-in">
-                    <div className="header-stats">
-                        <span style={{ fontSize: '1.2rem' }}>🌍 国名記憶ゲーム</span>
-                        <div style={{ background: reviewCount > 0 ? 'rgba(255, 71, 87, 0.2)' : 'rgba(255,255,255,0.1)', padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.9rem', color: reviewCount > 0 ? '#ff7675' : '#aaa' }}>
-                            📅 復習 {reviewCount}件
-                        </div>
-                    </div>
+            const renderIdle = () => {
+                if (isLoading) return <div className="card animate-fade-in"><h2 style={{ textAlign: 'center' }}>読み込み中...</h2></div>;
 
-                    <div style={{ marginBottom: '2rem' }}>
-                        <p style={{ color: '#aaa', marginBottom: '0.5rem' }}>問題数</p>
-                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                            {[1, 3, 5, 7, 10].map(n => (
-                                <button key={n} onClick={() => setCount(n)} className={`btn ${count === n ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '0.5rem 1rem' }}>
-                                    {n}個
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                const curList = getSelectedListData();
+                const totalItems = curList ? curList.items.length : 0;
 
-                    <div style={{ marginBottom: '3rem' }}>
-                        <p style={{ color: '#aaa', marginBottom: '0.5rem' }}>待機時間</p>
-                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                            {[{ v: 10, l: '10秒' }, { v: 30, l: '30秒' }, { v: 60, l: '1分' }, { v: 120, l: '2分' }].map(t => (
-                                <button key={t.v} onClick={() => setWaitTime(t.v)} className={`btn ${waitTime === t.v ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '0.5rem 1rem' }}>
-                                    {t.l}
-                                </button>
-                            ))}
+                return (
+                    <div className="card animate-fade-in">
+                        <div className="header-stats">
+                            <span style={{ fontSize: '1.2rem' }}>📝 リスト記憶ゲーム</span>
+                            <div style={{ background: reviewCount > 0 ? 'rgba(255, 71, 87, 0.2)' : 'rgba(255,255,255,0.1)', padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.9rem', color: reviewCount > 0 ? '#ff7675' : '#aaa' }}>
+                                📅 復習 {reviewCount}件
+                            </div>
                         </div>
-                    </div>
 
-                    <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.2rem' }} onClick={startNewGame}>
-                        スタート 🚀
-                    </button>
-                    <a href="index.html" style={{ display: 'block', textAlign: 'center', marginTop: '1.5rem', color: '#aaa', textDecoration: 'none' }}>マイページに戻る</a>
-                </div>
-            );
+                        <div style={{ marginBottom: '2rem' }}>
+                            <p style={{ color: '#aaa', marginBottom: '0.5rem' }}>覚えるテーマ</p>
+                            <select
+                                className="input-field"
+                                style={{ cursor: 'pointer' }}
+                                value={selectedListId || ''}
+                                onChange={(e) => setSelectedListId(e.target.value)}
+                            >
+                                {availableLists.map(list => (
+                                    <option key={list.id} value={list.id}>{list.title} ({list.items.length}件)</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div style={{ marginBottom: '2rem' }}>
+                            <p style={{ color: '#aaa', marginBottom: '0.5rem' }}>出題数</p>
+                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                {[1, 3, 5, 7, 10, 15, 20].filter(n => n <= totalItems).map(n => (
+                                    <button key={n} onClick={() => setCount(n)} className={`btn ${count === n ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '0.5rem 1rem' }}>
+                                        {n}個
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: '3rem' }}>
+                            <p style={{ color: '#aaa', marginBottom: '0.5rem' }}>待機時間</p>
+                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                {[{ v: 10, l: '10秒' }, { v: 30, l: '30秒' }, { v: 60, l: '1分' }, { v: 120, l: '2分' }].map(t => (
+                                    <button key={t.v} onClick={() => setWaitTime(t.v)} className={`btn ${waitTime === t.v ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '0.5rem 1rem' }}>
+                                        {t.l}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.2rem' }} onClick={startNewGame}>
+                            スタート 🚀
+                        </button>
+                        <a href="index.html" style={{ display: 'block', textAlign: 'center', marginTop: '1.5rem', color: '#aaa', textDecoration: 'none' }}>マイページに戻る</a>
+                    </div>
+                );
+            };
 
             const renderMemorize = () => (
                 <div className="card animate-fade-in" style={{ width: '100%' }}>
                     <h2 style={{ color: 'var(--accent-cyan)' }}>暗記フェーズ</h2>
-                    <p style={{ textAlign: 'center', color: '#aaa', marginBottom: '2rem' }}>以下の国名を覚えてください。</p>
+                    <p style={{ textAlign: 'center', color: '#aaa', marginBottom: '2rem' }}>以下の項目を覚えてください。</p>
 
                     <div style={{ marginBottom: '3rem' }}>
                         {targets.map((t, idx) => {
@@ -466,7 +551,7 @@
                     <div style={{ minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: 'var(--accent-pink)', lineHeight: '1.6' }} key={promptIndex} className="animate-fade-in">
                         💡 {PROMPTS[promptIndex]}
                     </div>
-                    <p style={{ marginTop: '2rem', color: '#aaa' }}>国名を心の中で思い出しましょう</p>
+                    <p style={{ marginTop: '2rem', color: '#aaa' }}>項目を心の中で思い出しましょう</p>
                 </div>
             );
 
@@ -484,7 +569,7 @@
                 return (
                     <div className="card animate-fade-in" style={{ width: '100%' }}>
                         <h2 style={{ color: 'var(--accent-cyan)', marginBottom: '2rem' }}>解答入力</h2>
-                        <p style={{ color: '#aaa', marginBottom: '1.5rem', textAlign: 'center' }}>思い出した国名を順不同で入力してください。<br /><span style={{ fontSize: '0.8rem' }}>※正式名称で入力（例：日本）</span></p>
+                        <p style={{ color: '#aaa', marginBottom: '1.5rem', textAlign: 'center' }}>思い出した項目を順不同で入力してください。<br /><span style={{ fontSize: '0.8rem' }}>※省略不可（例：日本）</span></p>
 
                         <div style={{ marginBottom: '2rem' }}>
                             {inputs.map((val, idx) => (
@@ -500,7 +585,7 @@
                                         setInputs(newIns);
                                     }}
                                     onKeyDown={(e) => handleKeyDown(e, idx)}
-                                    placeholder={`${idx + 1}つ目の国名`}
+                                    placeholder={`${idx + 1}つ目`}
                                     autoComplete="off"
                                 />
                             ))}
@@ -527,13 +612,13 @@
                                 if (r.isCorrect) {
                                     return (
                                         <div key={idx} className="country-item country-correct">
-                                            {r.country} <span style={{ marginLeft: '0.5rem' }}>✅</span>
+                                            {r.item} <span style={{ marginLeft: '0.5rem' }}>✅</span>
                                         </div>
                                     );
                                 }
 
                                 // Wrong: show hint and input
-                                const hintStr = r.country.substring(0, r.hintsRequired) + "…";
+                                const hintStr = r.item.substring(0, r.hintsRequired) + "…";
 
                                 return (
                                     <div key={idx} style={{ background: 'rgba(255, 71, 87, 0.1)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '1px solid rgba(255,71,87,0.3)' }}>
