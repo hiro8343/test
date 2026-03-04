@@ -352,8 +352,18 @@
                         merged_lists = merged_lists.concat(dynamicLists);
                         setAvailableLists(merged_lists);
 
-                        // Select first list by default
-                        if (merged_lists.length > 0) {
+                        // Check URL params for pre-selection
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const targetId = urlParams.get('id');
+                        const targetTitle = urlParams.get('title');
+
+                        if (targetId && merged_lists.find(l => String(l.id) === String(targetId))) {
+                            setSelectedListId(targetId);
+                        } else if (targetTitle && merged_lists.find(l => l.title === targetTitle)) {
+                            const found = merged_lists.find(l => l.title === targetTitle);
+                            setSelectedListId(found.id);
+                        } else if (merged_lists.length > 0) {
+                            // Select first list by default
                             setSelectedListId(merged_lists[0].id);
                         }
                     } catch (err) {

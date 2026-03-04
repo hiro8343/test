@@ -453,6 +453,19 @@
             examBtn.textContent = '🎯 検定に挑戦する';
             linksContainer.appendChild(examBtn);
 
+            // リスト記憶ゲームへのリンクを追加（要素数が2個以上の場合のみ）
+            if (item.content) {
+                const listItems = item.content.split(',').map(s => s.trim()).filter(s => s !== '');
+                if (listItems.length >= 2) {
+                    const listGameBtn = document.createElement('a');
+                    listGameBtn.href = `list_game.html?title=${encodeURIComponent(item.title)}`;
+                    listGameBtn.className = 'link-btn';
+                    listGameBtn.style.cssText = 'background: rgba(255, 100, 150, 0.2); color: #ff6b81; border-color: #ff6b81;';
+                    listGameBtn.textContent = '📝 このリストを覚える（ゲーム）';
+                    linksContainer.appendChild(listGameBtn);
+                }
+            }
+
             if (item.explanationUrl) {
                 const a = document.createElement('a');
                 a.href = item.explanationUrl;
