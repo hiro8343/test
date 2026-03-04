@@ -268,6 +268,7 @@
             const now = Date.now();
             let reviews = [];
             let newItems = [];
+            let nonDueItems = [];
 
             // Separate into due items and new/future items
             for (const item of all_items) {
@@ -276,6 +277,8 @@
                     reviews.push({ item, score: record.nextReviewTime });
                 } else if (!record) {
                     newItems.push({ item, score: Math.random() });
+                } else {
+                    nonDueItems.push({ item, score: Math.random() });
                 }
             }
 
@@ -283,6 +286,7 @@
             reviews.sort((a, b) => a.score - b.score);
             // Sort new items randomly
             newItems.sort((a, b) => a.score - b.score);
+            nonDueItems.sort((a, b) => a.score - b.score);
 
             const selected = [];
             for (const review of reviews) {
@@ -290,6 +294,9 @@
             }
             for (const newItem of newItems) {
                 if (selected.length < count) selected.push(newItem.item);
+            }
+            for (const nonDue of nonDueItems) {
+                if (selected.length < count) selected.push(nonDue.item);
             }
 
             // Shuffle selected
@@ -365,16 +372,12 @@
                 }
             }, [selectedListId]);
 
-            // Save SRS data on change
-            useEffect(() => {
-                if (selectedListId) {
-                    saveSRS(selectedListId, srsData);
-                }
-            }, [srsData, selectedListId]);
+            // Save SRS data on change inside effects creates bugs when switching lists.
+            // We will save only when checking answers.
 
             const reviewCount = getReviewCount(srsData);
 
-            const getSelectedListData = () => availableLists.find(l => l.id === selectedListId);
+            const getSelectedListData = () => availableLists.find(l => String(l.id) === String(selectedListId));
 
             // --- Handlers ---
             const startNewGame = () => {
@@ -386,7 +389,7 @@
 
                 const selected = selectItems(curList.items, srsData, actualCount);
                 setTargets(selected);
-                setInputs(Array(actualCount).fill(''));
+                setInputs(Array(selected.length).fill(''));
                 setPhase(PHASES.MEMORIZE);
             };
 
@@ -442,6 +445,7 @@
                 });
 
                 setSrsData(newSrsData);
+                if (selectedListId) saveSRS(selectedListId, newSrsData);
                 setResults(currentResults);
                 setPhase(PHASES.RESULT);
             };
