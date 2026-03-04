@@ -35,9 +35,9 @@ foreach ($row in $csvData) {
     # Simple logic for stars
     $len = $content.Length
     $stars = 2
-    if ($len > 200) { $stars = 5 }
-    elseif ($len > 100) { $stars = 4 }
-    elseif ($len > 40) { $stars = 3 }
+    if ($len -gt 200) { $stars = 5 }
+    elseif ($len -gt 100) { $stars = 4 }
+    elseif ($len -gt 40) { $stars = 3 }
 
     $item = [ordered]@{
         id             = $id
