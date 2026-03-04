@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国名記憶ゲーム | Memorization is a Game</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel for in-browser JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Data Source -->
+    <script src="scripts/countries.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: #fff;
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            overflow-x: hidden;
+        }
+
+        #root {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.2;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-cyan, #00ffff);
+            top: -100px;
+            left: -100px;
+            animation: float 8s infinite alternate;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-pink, #ff69b4);
+            bottom: 10%;
+            right: -50px;
+            animation: float 6s infinite alternate-reverse;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) scale(1);
+            }
+
+            100% {
+                transform: translateY(30px) scale(1.1);
+            }
+        }
+
+        .app-container {
+            z-index: 10;
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan, #0defd2), var(--accent-purple, #9b51e0));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 239, 210, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .input-field {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-cyan, #0defd2);
+        }
+
+        .timer-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .timer-circle.danger {
+            border-color: #ff4757;
+            color: #ff4757;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .country-item {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .country-weak {
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .country-correct {
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+        }
+
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- Utils & Constants ---
+        const ALL_COUNTRIES = window.COUNTRY_LIST || [];
+        const PHASES = { IDLE: 'idle', MEMORIZE: 'memorize', WAITING: 'waiting', INPUT: 'input', RESULT: 'result' };
+
+        const PROMPTS = [
+            "頭の中で1番から順番に声に出してみよう",
+            "目を閉じて、国名を映像として思い浮かべてみよう",
+            "地図上でその国がどこにあるか想像してみよう",
+            "国名をリズムに乗せて心の中で歌ってみよう",
+            "それぞれの国名の文字数を数えながら思い出そう"
+        ];
+
+        // SRS Logic (simplified SM-2)
+        const loadSRS = () => JSON.parse(localStorage.getItem('countrySrsData') || '{}');
+        const saveSRS = (data) => localStorage.setItem('countrySrsData', JSON.stringify(data));
+
+        const updateSRS = (srsData, country, isCorrect) => {
+            const now = Date.now();
+            const record = srsData[country] || { easeFactor: 2.5, interval: 0, nextReviewTime: 0, isWeak: false };
+
+            if (isCorrect) {
+                if (record.interval === 0) record.interval = 1;
+                else record.interval = Math.round(record.interval * record.easeFactor);
+                record.easeFactor = Math.min(Math.max(1.3, record.easeFactor + 0.1), 3.0);
+                record.isWeak = false;
+            } else {
+                record.interval = 1;
+                record.easeFactor = Math.max(1.3, record.easeFactor - 0.2);
+                record.isWeak = true;
+            }
+            record.nextReviewTime = now + record.interval * 24 * 60 * 60 * 1000;
+            return { ...srsData, [country]: record };
+        };
+
+        const getReviewCount = (srsData) => {
+            const now = Date.now();
+            return Object.values(srsData).filter(item => item.nextReviewTime < now || item.isWeak).length;
+        };
+
+        const selectCountries = (srsData, count) => {
+            const now = Date.now();
+            let reviews = [];
+            let newItems = [];
+
+            // Separate into due items and new/future items
+            for (const country of ALL_COUNTRIES) {
+                const record = srsData[country];
+                if (record && (record.isWeak || record.nextReviewTime < now)) {
+                    reviews.push({ country, score: record.nextReviewTime });
+                } else if (!record) {
+                    newItems.push({ country, score: Math.random() });
+                }
+            }
+
+            // Sort reviews by how overdue they are
+            reviews.sort((a, b) => a.score - b.score);
+            // Sort new items randomly
+            newItems.sort((a, b) => a.score - b.score);
+
+            const selected = [];
+            for (const item of reviews) {
+                if (selected.length < count) selected.push(item.country);
+            }
+            for (const item of newItems) {
+                if (selected.length < count) selected.push(item.country);
+            }
+
+            // Shuffle selected
+            return selected.sort(() => Math.random() - 0.5);
+        };
+
+        // --- Main App Component ---
+        const App = () => {
+            const [phase, setPhase] = useState(PHASES.IDLE);
+            const [srsData, setSrsData] = useState(loadSRS());
+
+            // Settings
+            const [count, setCount] = useState(5);
+            const [waitTime, setWaitTime] = useState(30);
+
+            // Game State
+            const [targets, setTargets] = useState([]);
+            const [timeLeft, setTimeLeft] = useState(0);
+            const [inputs, setInputs] = useState([]);
+            const [results, setResults] = useState([]); // Array of { country, isCorrect, hintsRequired }
+            const [promptIndex, setPromptIndex] = useState(0);
+
+            // Save SRS data on change
+            useEffect(() => { saveSRS(srsData); }, [srsData]);
+
+            const reviewCount = getReviewCount(srsData);
+
+            // --- Handlers ---
+            const startNewGame = () => {
+                const selected = selectCountries(srsData, count);
+                setTargets(selected);
+                setInputs(Array(count).fill(''));
+                setPhase(PHASES.MEMORIZE);
+            };
+
+            const retrySameGame = () => {
+                setInputs(Array(count).fill(''));
+                setPhase(PHASES.MEMORIZE);
+            };
+
+            const startWaiting = () => {
+                setTimeLeft(waitTime);
+                setPromptIndex(Math.floor(Math.random() * PROMPTS.length));
+                setPhase(PHASES.WAITING);
+            };
+
+            // Timer Effect for Waiting Phase
+            useEffect(() => {
+                let timer;
+                let promptTimer;
+                if (phase === PHASES.WAITING) {
+                    timer = setInterval(() => {
+                        setTimeLeft(prev => {
+                            if (prev <= 1) {
+                                setPhase(PHASES.INPUT);
+                                return 0;
+                            }
+                            return prev - 1;
+                        });
+                    }, 1000);
+
+                    // Change prompt every 10s
+                    promptTimer = setInterval(() => {
+                        setPromptIndex(prev => (prev + 1) % PROMPTS.length);
+                    }, 10000);
+                }
+                return () => { clearInterval(timer); clearInterval(promptTimer); };
+            }, [phase]);
+
+            const checkAnswers = () => {
+                const answerList = inputs.map(i => i.trim()).filter(i => i !== '');
+                let newSrsData = { ...srsData };
+
+                // For simplicity, ANY order is matched. We need to match each target to one input.
+                const matchedInputs = new Set();
+                const currentResults = targets.map(target => {
+                    const matchIndex = answerList.findIndex((ans, idx) => !matchedInputs.has(idx) && ans === target);
+                    const isCorrect = matchIndex !== -1;
+                    if (isCorrect) matchedInputs.add(matchIndex);
+
+                    // Update SRS only on first check (hintsRequired = 0)
+                    newSrsData = updateSRS(newSrsData, target, isCorrect);
+
+                    return { country: target, isCorrect, hintsRequired: isCorrect ? 0 : 1 };
+                });
+
+                setSrsData(newSrsData);
+                setResults(currentResults);
+                setPhase(PHASES.RESULT);
+            };
+
+            const submitRetry = (index, value) => {
+                const res = [...results];
+                const target = res[index].country;
+                if (value.trim() === target) {
+                    res[index].isCorrect = true;
+                } else {
+                    res[index].hintsRequired += 1;
+                }
+                setResults(res);
+            };
+
+            // --- Render Helpers ---
+            const renderIdle = () => (
+                <div className="card animate-fade-in">
+                    <div className="header-stats">
+                        <span style={{ fontSize: '1.2rem' }}>🌍 国名記憶ゲーム</span>
+                        <div style={{ background: reviewCount > 0 ? 'rgba(255, 71, 87, 0.2)' : 'rgba(255,255,255,0.1)', padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.9rem', color: reviewCount > 0 ? '#ff7675' : '#aaa' }}>
+                            📅 復習 {reviewCount}件
+                        </div>
+                    </div>
+
+                    <div style={{ marginBottom: '2rem' }}>
+                        <p style={{ color: '#aaa', marginBottom: '0.5rem' }}>問題数</p>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            {[1, 3, 5, 7, 10].map(n => (
+                                <button key={n} onClick={() => setCount(n)} className={`btn ${count === n ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '0.5rem 1rem' }}>
+                                    {n}個
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div style={{ marginBottom: '3rem' }}>
+                        <p style={{ color: '#aaa', marginBottom: '0.5rem' }}>待機時間</p>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            {[{ v: 10, l: '10秒' }, { v: 30, l: '30秒' }, { v: 60, l: '1分' }, { v: 120, l: '2分' }].map(t => (
+                                <button key={t.v} onClick={() => setWaitTime(t.v)} className={`btn ${waitTime === t.v ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '0.5rem 1rem' }}>
+                                    {t.l}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.2rem' }} onClick={startNewGame}>
+                        スタート 🚀
+                    </button>
+                    <a href="index.html" style={{ display: 'block', textAlign: 'center', marginTop: '1.5rem', color: '#aaa', textDecoration: 'none' }}>マイページに戻る</a>
+                </div>
+            );
+
+            const renderMemorize = () => (
+                <div className="card animate-fade-in" style={{ width: '100%' }}>
+                    <h2 style={{ color: 'var(--accent-cyan)' }}>暗記フェーズ</h2>
+                    <p style={{ textAlign: 'center', color: '#aaa', marginBottom: '2rem' }}>以下の国名を覚えてください。</p>
+
+                    <div style={{ marginBottom: '3rem' }}>
+                        {targets.map((t, idx) => {
+                            const isWeak = srsData[t]?.isWeak;
+                            return (
+                                <div key={idx} className={`country-item ${isWeak ? 'country-weak' : ''}`}>
+                                    {t}
+                                    {isWeak && <span style={{ fontSize: '0.8rem', marginLeft: '1rem', color: '#ff4757' }}>⚠️苦手</span>}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }} onClick={startWaiting}>
+                        覚えた！テストを受ける ✅
+                    </button>
+                    <button className="btn btn-secondary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => setPhase(PHASES.IDLE)}>
+                        やめる
+                    </button>
+                </div>
+            );
+
+            const renderWaiting = () => (
+                <div className="card animate-fade-in" style={{ width: '100%', textAlign: 'center', padding: '4rem 2rem' }}>
+                    <div className={`timer-circle ${timeLeft <= 5 ? 'danger' : ''}`}>
+                        {timeLeft}
+                    </div>
+                    <div style={{ minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: 'var(--accent-pink)', lineHeight: '1.6' }} key={promptIndex} className="animate-fade-in">
+                        💡 {PROMPTS[promptIndex]}
+                    </div>
+                    <p style={{ marginTop: '2rem', color: '#aaa' }}>国名を心の中で思い出しましょう</p>
+                </div>
+            );
+
+            const renderInput = () => {
+                const handleKeyDown = (e, index) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const nextId = `input-${index + 1}`;
+                        const nextEle = document.getElementById(nextId);
+                        if (nextEle) nextEle.focus();
+                        else checkAnswers(); // submit if last
+                    }
+                };
+
+                return (
+                    <div className="card animate-fade-in" style={{ width: '100%' }}>
+                        <h2 style={{ color: 'var(--accent-cyan)', marginBottom: '2rem' }}>解答入力</h2>
+                        <p style={{ color: '#aaa', marginBottom: '1.5rem', textAlign: 'center' }}>思い出した国名を順不同で入力してください。<br /><span style={{ fontSize: '0.8rem' }}>※正式名称で入力（例：日本）</span></p>
+
+                        <div style={{ marginBottom: '2rem' }}>
+                            {inputs.map((val, idx) => (
+                                <input
+                                    key={idx}
+                                    id={`input-${idx}`}
+                                    className="input-field"
+                                    type="text"
+                                    value={val}
+                                    onChange={(e) => {
+                                        const newIns = [...inputs];
+                                        newIns[idx] = e.target.value;
+                                        setInputs(newIns);
+                                    }}
+                                    onKeyDown={(e) => handleKeyDown(e, idx)}
+                                    placeholder={`${idx + 1}つ目の国名`}
+                                    autoComplete="off"
+                                />
+                            ))}
+                        </div>
+
+                        <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }} onClick={checkAnswers}>
+                            答え合わせ 🔍
+                        </button>
+                    </div>
+                );
+            };
+
+            const renderResult = () => {
+                const allCorrect = results.every(r => r.isCorrect);
+
+                return (
+                    <div className="card animate-fade-in" style={{ width: '100%' }}>
+                        <h2 style={{ color: allCorrect ? '#2ed573' : 'var(--accent-cyan)', marginBottom: '2rem' }}>
+                            {allCorrect ? '🎉 全問正解！素晴らしい！' : '結果発表'}
+                        </h2>
+
+                        <div style={{ marginBottom: '2rem' }}>
+                            {results.map((r, idx) => {
+                                if (r.isCorrect) {
+                                    return (
+                                        <div key={idx} className="country-item country-correct">
+                                            {r.country} <span style={{ marginLeft: '0.5rem' }}>✅</span>
+                                        </div>
+                                    );
+                                }
+
+                                // Wrong: show hint and input
+                                const hintStr = r.country.substring(0, r.hintsRequired) + "…";
+
+                                return (
+                                    <div key={idx} style={{ background: 'rgba(255, 71, 87, 0.1)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '1px solid rgba(255,71,87,0.3)' }}>
+                                        <p style={{ color: '#ff4757', margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>❌ 不正解 / 未入力</p>
+                                        <p style={{ color: '#aaa', margin: '0 0 1rem 0', fontSize: '0.9rem' }}>ヒント: <span style={{ color: '#fff', fontWeight: 'bold' }}>{hintStr}</span></p>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <input
+                                                id={`retry-${idx}`}
+                                                className="input-field"
+                                                style={{ marginBottom: 0 }}
+                                                placeholder="もう一度入力"
+                                                autoComplete="off"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') submitRetry(idx, e.target.value);
+                                                }}
+                                            />
+                                            <button className="btn btn-secondary" onClick={() => {
+                                                const el = document.getElementById(`retry-${idx}`);
+                                                submitRetry(idx, el.value);
+                                                el.value = '';
+                                            }}>確認</button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {allCorrect && (
+                                <>
+                                    <button className="btn btn-primary" onClick={startNewGame}>新しい問題 🔄</button>
+                                    <button className="btn btn-secondary" onClick={retrySameGame}>同じ問題に再挑戦 🔁</button>
+                                    <button className="btn btn-secondary" onClick={() => setPhase(PHASES.IDLE)} style={{ border: 'none', background: 'transparent' }}>設定に戻る</button>
+                                </>
+                            )}
+                            {!allCorrect && (
+                                <p style={{ textAlign: 'center', color: '#aaa', fontSize: '0.9rem' }}>全て正解するまで再入力してください</p>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+
+            return (
+                <div className="app-container">
+                    {phase === PHASES.IDLE && renderIdle()}
+                    {phase === PHASES.MEMORIZE && renderMemorize()}
+                    {phase === PHASES.WAITING && renderWaiting()}
+                    {phase === PHASES.INPUT && renderInput()}
+                    {phase === PHASES.RESULT && renderResult()}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
