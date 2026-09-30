@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-80TMBGVND6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-80TMBGVND6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仕事を楽しむ100の方法 | 楽しい暗記サイト</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@700;900&display=swap"
+        rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <style>
+        .book-header {
+            text-align: center;
+            padding: 4rem 0 2rem;
+        }
+
+        .book-header p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-top: 1rem;
+        }
+
+        .book-progress {
+            max-width: 480px;
+            margin: 2rem auto 0;
+        }
+
+        .book-progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .book-progress-fill {
+            height: 100%;
+            width: 0;
+            background: var(--gradient-main);
+            transition: width 0.4s ease;
+        }
+
+        .book-progress-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .today-card {
+            background: rgba(20, 20, 31, 0.8);
+            border: 1px solid var(--accent-cyan);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 720px;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .today-card h2 {
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.75rem;
+        }
+
+        .toc {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .toc a,
+        .toc button {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            border: var(--border-glass);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .toc a:hover,
+        .toc button:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .search-box {
+            display: block;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto 2rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            border: var(--border-glass);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .chapter {
+            margin: 3rem 0;
+        }
+
+        .chapter-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .chapter-lead {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .way-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .way {
+            background: rgba(20, 20, 31, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .way.done {
+            border-color: rgba(10, 255, 104, 0.4);
+        }
+
+        .way-no {
+            font-family: var(--font-heading);
+            color: var(--accent-purple);
+            font-size: 0.9rem;
+        }
+
+        .way-title {
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .way-body {
+            font-size: 0.92rem;
+            color: var(--text-main);
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+
+        .way-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .way-meta a {
+            color: var(--accent-cyan);
+            word-break: break-all;
+        }
+
+        .way-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .way.done .way-check {
+            color: var(--accent-green);
+        }
+
+        .book-afterword {
+            text-align: center;
+            color: var(--text-muted);
+            line-height: 1.9;
+            padding: 3rem 0 6rem;
+        }
+
+        @media (max-width: 480px) {
+            .way-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-back">← Topに戻る</a>
+
+        <header class="book-header animate-fade-in">
+            <span style="color: var(--accent-cyan); font-weight: bold; font-family: monospace;">BONUS BOOK</span>
+            <h1 class="text-gradient">仕事を楽しむ100の方法</h1>
+            <p>暗記は遊び方を発見するゲーム。だったら、仕事もきっと同じ。<br>
+                このサイトの「基本原理」「攻略本」「プレイスタイル診断」「研究所」「かっこいい知識」「マイページ」から、<br>
+                仕事を楽しくする100のアイデアを集めました。</p>
+            <div class="book-progress">
+                <div class="book-progress-bar"><div class="book-progress-fill" id="progress-fill"></div></div>
+                <div class="book-progress-label" id="progress-label">やってみた：0 / 100</div>
+            </div>
+        </header>
+
+        <section class="today-card animate-fade-in delay-100">
+            <h2>🎲 今日の1つ</h2>
+            <div id="today"></div>
+        </section>
+
+        <nav class="toc" id="toc"></nav>
+        <input type="search" class="search-box" id="search" placeholder="🔍 キーワードで探す（例：寝る、図、バッジ）">
+
+        <main id="book"></main>
+
+        <footer class="book-afterword">
+            ぜんぶやらなくて大丈夫。<br>
+            気になった1つを、今日ためしてみるところから。<br>
+            📚 参考文献のリンクは各項目の下にあります（原典は「暗記の基本原理」ページにも掲載）。
+        </footer>
+    </div>
+
+    <a href="mypage.html" class="nav-mypage-btn">👤 マイページ</a>
+
+    <script src="scripts/work_joy_data.js"></script>
+    <script>
+        const STORAGE_KEY = 'workJoyDone';
+
+        function loadDone() {
+            try {
+                return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+            } catch (e) {
+                return new Set();
+            }
+        }
+
+        function saveDone(done) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify([...done]));
+            } catch (e) { /* ストレージが使えない環境では保存しない */ }
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        const items = WORK_JOY_ITEMS.map((row, i) => ({
+            no: i + 1,
+            chapter: row[0],
+            title: row[1],
+            body: row[2],
+            from: row[3],
+            ref: row[4] ? WORK_JOY_REFS[row[4]] : null
+        }));
+
+        const done = loadDone();
+
+        function wayHtml(item, withCheck = true) {
+            const refHtml = item.ref
+                ? `<br>📚 <a href="${item.ref.url}" target="_blank" rel="noopener">${escapeHtml(item.ref.label)}</a>`
+                : '';
+            const checkHtml = withCheck
+                ? `<label class="way-check"><input type="checkbox" data-no="${item.no}" ${done.has(item.no) ? 'checked' : ''}> やってみた</label>`
+                : '';
+            return `
+                <span class="way-no">No.${String(item.no).padStart(3, '0')}</span>
+                <div class="way-title">${escapeHtml(item.title)}</div>
+                <div class="way-body">${escapeHtml(item.body)}</div>
+                <div class="way-meta">元ネタ：${escapeHtml(item.from)}${refHtml}</div>
+                ${checkHtml}
+            `;
+        }
+
+        function updateProgress() {
+            const count = done.size;
+            document.getElementById('progress-fill').style.width = `${count}%`;
+            document.getElementById('progress-label').textContent = `やってみた：${count} / ${items.length}`;
+        }
+
+        function renderToday() {
+            // 日付ごとに同じ1つが出るように、日付からインデックスを決める
+            const d = new Date();
+            const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+            const item = items[seed % items.length];
+            document.getElementById('today').innerHTML = wayHtml(item, false);
+        }
+
+        function renderBook(query = '') {
+            const book = document.getElementById('book');
+            const q = query.trim().toLowerCase();
+            book.innerHTML = '';
+
+            WORK_JOY_CHAPTERS.forEach((ch, idx) => {
+                const list = items.filter(it => it.chapter === ch.key &&
+                    (!q || `${it.title}${it.body}${it.from}`.toLowerCase().includes(q)));
+                if (list.length === 0) return;
+
+                const section = document.createElement('section');
+                section.className = 'chapter';
+                section.id = `ch-${ch.key}`;
+                section.innerHTML = `
+                    <h2 class="chapter-title">${ch.icon} 第${idx + 1}章 ${escapeHtml(ch.title)}</h2>
+                    <p class="chapter-lead">${escapeHtml(ch.lead)}</p>
+                    <div class="way-list"></div>
+                `;
+                const listEl = section.querySelector('.way-list');
+                list.forEach(it => {
+                    const div = document.createElement('article');
+                    div.className = `way ${done.has(it.no) ? 'done' : ''}`;
+                    div.innerHTML = wayHtml(it);
+                    listEl.appendChild(div);
+                });
+                book.appendChild(section);
+            });
+
+            if (!book.children.length) {
+                book.innerHTML = '<p style="text-align:center;color:var(--text-muted);">見つかりませんでした。別のキーワードで探してみよう。</p>';
+            }
+        }
+
+        function renderToc() {
+            const toc = document.getElementById('toc');
+            toc.innerHTML = WORK_JOY_CHAPTERS.map((ch, idx) =>
+                `<a href="#ch-${ch.key}">${ch.icon} ${idx + 1}. ${escapeHtml(ch.title)}</a>`).join('') +
+                '<button type="button" id="random-btn">🎲 ランダムに1つ</button>';
+            document.getElementById('random-btn').addEventListener('click', () => {
+                const item = items[Math.floor(Math.random() * items.length)];
+                document.getElementById('today').innerHTML = wayHtml(item, false);
+                document.querySelector('.today-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+
+        document.getElementById('book').addEventListener('change', e => {
+            if (!e.target.matches('input[type="checkbox"][data-no]')) return;
+            const no = Number(e.target.dataset.no);
+            if (e.target.checked) done.add(no); else done.delete(no);
+            e.target.closest('.way').classList.toggle('done', e.target.checked);
+            saveDone(done);
+            updateProgress();
+        });
+
+        document.getElementById('search').addEventListener('input', e => renderBook(e.target.value));
+
+        renderToc();
+        renderToday();
+        renderBook();
+        updateProgress();
+    </script>
+</body>
+
+</html>
